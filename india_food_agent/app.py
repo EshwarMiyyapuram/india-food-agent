@@ -131,68 +131,6 @@ section[data-testid="stSidebar"] .stButton > button:hover {
 .stTabs [aria-selected="true"] { color: var(--spice) !important; border-bottom-color: var(--spice) !important; }
 .stTabs [data-baseweb="tab-panel"] { padding-top: 24px !important; }
 
-/* ── TOP DISHES CARD ── */
-.top-dish-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px 24px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 18px;
-    transition: box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-.top-dish-card:hover { box-shadow: 0 8px 28px rgba(196,65,26,0.12); }
-.top-dish-rank {
-    font-family: 'DM Mono', monospace;
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--spice);
-    line-height: 1;
-    min-width: 40px;
-}
-.top-dish-rank.top3 { color: var(--gold); font-size: 32px; }
-.top-dish-content { flex: 1; }
-.top-dish-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 4px;
-}
-.top-dish-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
-.top-dish-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-.top-dish-tag {
-    font-size: 11px; font-weight: 600; letter-spacing: 0.05em;
-    padding: 4px 10px; border-radius: 20px;
-    background: rgba(196,65,26,0.08); color: var(--spice);
-    border: 1px solid rgba(196,65,26,0.2);
-}
-.top-dish-tag.green { background: rgba(26,107,58,0.08); color: var(--green); border-color: rgba(26,107,58,0.2); }
-.top-dish-tag.gold { background: rgba(212,160,23,0.1); color: #8B6914; border-color: rgba(212,160,23,0.3); }
-.top-dish-price {
-    font-family: 'DM Mono', monospace;
-    font-size: 18px; font-weight: 600;
-    color: var(--green);
-    white-space: nowrap;
-    padding-top: 4px;
-}
-.top-dish-restaurant {
-    font-size: 12px; color: var(--muted);
-    margin-top: 6px;
-}
-.top-dish-restaurant strong { color: var(--ink); }
-
-/* ── SECTION HEADERS ── */
-.sec-head { display: flex; align-items: center; gap: 14px; margin: 28px 0 16px; }
-.sec-head-line { flex: 1; height: 1px; background: var(--border); }
-.sec-head-text {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--spice); white-space: nowrap;
-}
-
 /* ── STATUS BANNERS ── */
 .status-success {
     background: linear-gradient(135deg, #0F2818 0%, #143521 100%);
@@ -208,193 +146,185 @@ section[data-testid="stSidebar"] .stButton > button:hover {
     font-size: 13px; color: #93C5FD;
 }
 
-/* ── DISH CARDS (specials) ── */
+/* ── SECTION HEADERS ── */
+.sec-head { display: flex; align-items: center; gap: 14px; margin: 28px 0 16px; }
+.sec-head-line { flex: 1; height: 1px; background: var(--border); }
+.sec-head-text { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--spice); white-space: nowrap; }
+
+/* ── KPI CARDS ── */
+.kpi-card {
+    background: var(--card-bg); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px 22px; position: relative;
+    overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(196,65,26,0.1); }
+.kpi-card::after { content: attr(data-icon); position: absolute; right: 16px; top: 14px; font-size: 28px; opacity: 0.12; }
+.kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.kpi-value { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 6px; }
+.kpi-delta { font-size: 11px; font-weight: 600; color: var(--green-lt); }
+.kpi-accent { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+.kpi-accent.spice  { background: linear-gradient(90deg, var(--spice), var(--spice-lt)); }
+.kpi-accent.gold   { background: linear-gradient(90deg, var(--gold), var(--gold-lt)); }
+.kpi-accent.green  { background: linear-gradient(90deg, var(--green), var(--green-lt)); }
+.kpi-accent.purple { background: linear-gradient(90deg, var(--purple), var(--purple-lt)); }
+
+/* ── ANALYSIS CALLOUT ── */
+.analysis-callout {
+    background: var(--ink); border-radius: 16px; padding: 24px 28px;
+    margin-bottom: 28px; position: relative; overflow: hidden;
+}
+.analysis-callout::before {
+    content: '"'; position: absolute; font-family: 'Playfair Display', serif;
+    font-size: 160px; color: rgba(196,65,26,0.1); top: -20px; left: 20px; line-height: 1;
+}
+.analysis-eyebrow { font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--spice-lt); font-weight: 600; margin-bottom: 10px; }
+.analysis-text { font-family: 'Playfair Display', serif; font-size: 17px; font-style: italic; color: rgba(245,239,230,0.85); line-height: 1.8; position: relative; z-index: 1; }
+
+/* ── SCRAPE PANELS ── */
+.scrape-panel { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 22px; height: 100%; }
+.scrape-panel-title { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.scrape-panel-title span { flex: 1; height: 1px; background: var(--border); }
+
+.google-result { border-left: 3px solid var(--spice); padding: 10px 14px; margin-bottom: 8px; border-radius: 0 8px 8px 0; background: rgba(196,65,26,0.04); transition: background 0.2s; }
+.google-result:hover { background: rgba(196,65,26,0.08); }
+.g-title { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.4; }
+.g-snippet { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+
+.zomato-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; background: rgba(226,55,68,0.05); border: 1px solid rgba(226,55,68,0.1); transition: background 0.2s; }
+.zomato-item:hover { background: rgba(226,55,68,0.1); }
+.zomato-icon { font-size: 18px; }
+.zomato-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+.zomato-type { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #E23744; margin-top: 1px; }
+
+.article-item { padding: 10px 14px; border-radius: 8px; margin-bottom: 7px; background: rgba(26,107,58,0.04); border-left: 3px solid var(--green-lt); }
+.art-headline { font-size: 12px; font-weight: 600; color: var(--ink); line-height: 1.5; }
+.art-source { font-size: 10px; color: var(--green); margin-top: 3px; font-weight: 500; }
+
+/* ── HASHTAGS ── */
+.htag { display: inline-block; padding: 5px 13px; border-radius: 20px; font-size: 11px; font-weight: 700; margin: 4px; font-family: 'DM Mono', monospace; transition: transform 0.15s; cursor: default; }
+.htag:hover { transform: scale(1.05); }
+.htag-viral  { background: #2D0A1A; color: #F472B6; border: 1px solid rgba(244,114,182,0.3); }
+.htag-hot    { background: #2D1400; color: #FB923C; border: 1px solid rgba(251,146,60,0.3); }
+.htag-rising { background: #0A1F12; color: #4ADE80; border: 1px solid rgba(74,222,128,0.3); }
+.htag-new    { background: #0A1E2D; color: #38BDF8; border: 1px solid rgba(56,189,248,0.3); }
+
+/* ── INGREDIENT PILLS ── */
+.ing-pill {
+    background: var(--card-bg); border: 1.5px solid var(--spice); border-radius: 14px;
+    padding: 14px 16px; text-align: center; transition: all 0.2s;
+}
+.ing-pill:hover { background: rgba(196,65,26,0.05); transform: translateY(-2px); }
+.ing-pill-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.ing-rank { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+/* ── DISH CARDS ── */
 .dish-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    overflow: hidden;
-    margin-bottom: 18px;
-    transition: box-shadow 0.2s, transform 0.15s;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border);
+    margin-bottom: 20px; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s;
 }
-.dish-card:hover { box-shadow: 0 12px 40px rgba(196,65,26,0.14); transform: translateY(-2px); }
-.dish-card-header {
-    padding: 22px 24px 18px;
-    position: relative;
-}
-.dish-card-header.margin  { background: linear-gradient(135deg, #1A0E08 0%, #2D1507 100%); }
-.dish-card-header.premium { background: linear-gradient(135deg, #120D1A 0%, #1E1030 100%); }
-.dish-card-header.insta   { background: linear-gradient(135deg, #0A1A1A 0%, #0D2929 100%); }
-.dish-card-header.performer { background: linear-gradient(135deg, #0A0D1A 0%, #111830 100%); }
+.dish-card:hover { transform: translateY(-3px); box-shadow: 0 16px 50px rgba(0,0,0,0.12); }
+.dish-card-header { padding: 22px 24px 18px; position: relative; }
+.dish-card-header.margin    { background: linear-gradient(135deg, #071A0D 0%, #0F2818 100%); }
+.dish-card-header.premium   { background: linear-gradient(135deg, #110825 0%, #1E1040 100%); }
+.dish-card-header.insta     { background: linear-gradient(135deg, #1F0813 0%, #2D1020 100%); }
+.dish-card-header.performer { background: linear-gradient(135deg, #1A0A02 0%, #2A1404 100%); }
+
 .dish-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-.dish-badge {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 5px 12px; border-radius: 20px;
-}
-.badge-margin   { background: rgba(212,160,23,0.2); color: #F0C040; border: 1px solid rgba(212,160,23,0.4); }
-.badge-premium  { background: rgba(139,92,246,0.2); color: #C4B5FD; border: 1px solid rgba(139,92,246,0.4); }
-.badge-insta    { background: rgba(34,160,90,0.2);  color: #6EE7B7; border: 1px solid rgba(34,160,90,0.4);  }
-.badge-performer{ background: rgba(239,68,68,0.2);  color: #FCA5A5; border: 1px solid rgba(239,68,68,0.4);  }
-.dish-price-badge {
-    font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 600;
-    color: #F0C040; text-align: right;
-}
-.dish-name {
-    font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 800;
-    color: #F5EFE6; line-height: 1.15; margin-bottom: 6px;
-}
-.dish-key-ing { font-size: 11px; color: rgba(245,239,230,0.45); letter-spacing: 0.06em; }
+.dish-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; }
+.badge-margin    { background: rgba(74,222,128,0.15);  color: #4ADE80;  border: 1px solid rgba(74,222,128,0.2); }
+.badge-premium   { background: rgba(167,139,250,0.15); color: #A78BFA;  border: 1px solid rgba(167,139,250,0.2); }
+.badge-insta     { background: rgba(244,114,182,0.15); color: #F472B6;  border: 1px solid rgba(244,114,182,0.2); }
+.badge-performer { background: rgba(251,146,60,0.15);  color: #FB923C;  border: 1px solid rgba(251,146,60,0.2); }
+
+.dish-price-badge { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--gold-lt); text-align: right; }
+.demand-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+.demand-label { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; vertical-align: middle; }
+.demand-high-wrap   .demand-dot { background: #4ADE80; box-shadow: 0 0 6px #4ADE80; }
+.demand-medium-wrap .demand-dot { background: #FB923C; box-shadow: 0 0 6px #FB923C; }
+.demand-low-wrap    .demand-dot { background: #94A3B8; }
+.demand-high-wrap   .demand-label { color: #4ADE80; }
+.demand-medium-wrap .demand-label { color: #FB923C; }
+.demand-low-wrap    .demand-label { color: #94A3B8; }
+
+.dish-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #F5EFE6; line-height: 1.2; margin-bottom: 6px; }
+.dish-key-ing { font-size: 11px; font-weight: 500; color: rgba(245,239,230,0.45); font-style: italic; }
 .dish-card-body { padding: 20px 24px; }
-.dish-desc { font-size: 13.5px; color: #4A3F37; line-height: 1.7; margin-bottom: 18px; }
-.dish-meta-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
-.dish-meta-item { flex: 1; min-width: 80px; }
-.dmi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #A89F97; margin-bottom: 4px; }
+.dish-desc { font-size: 13px; color: #57534E; line-height: 1.8; margin-bottom: 18px; }
+.dish-meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.dish-meta-item { background: rgba(196,65,26,0.04); border-radius: 10px; padding: 10px 14px; border: 1px solid var(--border); }
+.dmi-label { font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
 .dmi-value { font-size: 13px; font-weight: 600; color: var(--ink); }
-.dmi-value.spice { color: var(--spice); }
-.dmi-value.green { color: var(--green); }
-.dish-inspired {
-    background: var(--paper); border-radius: 10px; padding: 12px 16px;
-    font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 10px;
-}
-.demand-high-wrap   .demand-dot { width:7px;height:7px;border-radius:50%;background:#22A05A;display:inline-block;margin-right:4px; }
-.demand-medium-wrap .demand-dot { width:7px;height:7px;border-radius:50%;background:#F0C040;display:inline-block;margin-right:4px; }
-.demand-low-wrap    .demand-dot { width:7px;height:7px;border-radius:50%;background:#EF4444;display:inline-block;margin-right:4px; }
-.demand-label { font-size: 11px; font-weight: 600; }
-.demand-high-wrap   .demand-label { color: #22A05A; }
-.demand-medium-wrap .demand-label { color: #D4A017; }
-.demand-low-wrap    .demand-label { color: #EF4444; }
+.dmi-value.green { color: var(--green-lt); }
+.dmi-value.spice { color: var(--spice-lt); }
+.dish-inspired { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); padding: 8px 14px; border-radius: 8px; background: rgba(196,65,26,0.04); border: 1px solid var(--border); }
+.dish-inspired strong { color: var(--ink); font-weight: 600; }
 
 /* ── TIPS ── */
-.tip-block { border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; }
-.tip-block.plating { background: rgba(212,160,23,0.08); border-left: 3px solid var(--gold); }
-.tip-block.reels   { background: rgba(26,107,58,0.08);  border-left: 3px solid var(--green); }
-.tip-block.trend   { background: rgba(196,65,26,0.07);  border-left: 3px solid var(--spice); }
-.tip-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+.tip-block { background: var(--card-bg); border-radius: 12px; padding: 14px 18px; margin: 8px 0; border-left: 3px solid; }
+.tip-block.plating { border-color: var(--gold); }
+.tip-block.reels   { border-color: #F472B6; }
+.tip-block.trend   { border-color: var(--green-lt); }
+.tip-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 6px; }
 .tip-block.plating .tip-label { color: var(--gold); }
-.tip-block.reels   .tip-label { color: var(--green); }
-.tip-block.trend   .tip-label { color: var(--spice); }
-.tip-text { font-size: 13px; color: var(--ink); line-height: 1.6; }
+.tip-block.reels   .tip-label { color: #F472B6; }
+.tip-block.trend   .tip-label { color: var(--green-lt); }
+.tip-text { font-size: 13px; color: var(--ink); line-height: 1.7; }
 
 /* ── INSIGHT BOX ── */
-.insight-box {
-    background: var(--ink); border-radius: 18px; padding: 30px 36px;
-    margin: 28px 0; position: relative; overflow: hidden;
-}
-.insight-box::before {
-    content: ''; position: absolute; top: -40px; right: -40px;
-    width: 200px; height: 200px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(212,160,23,0.2) 0%, transparent 70%);
-}
-.insight-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--spice-lt); margin-bottom: 8px; }
-.insight-city { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #F5EFE6; margin-bottom: 14px; }
-.insight-text { font-size: 15px; color: rgba(245,239,230,0.75); line-height: 1.75; margin-bottom: 18px; }
-.insight-revenue { font-size: 13px; color: var(--gold-lt); font-weight: 600; }
-
-/* ── ING PILL ── */
-.ing-pill {
-    background: var(--card-bg); border: 1px solid var(--border);
-    border-radius: 14px; padding: 16px 18px; text-align: center;
-    transition: transform 0.15s;
-}
-.ing-pill:hover { transform: translateY(-2px); }
-.ing-pill-icon { font-size: 24px; display: block; margin-bottom: 8px; }
-.ing-rank { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
-
-/* ── TREND CARDS ── */
-.trend-card {
-    background: var(--card-bg); border: 1px solid var(--border);
-    border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
-    display: flex; justify-content: space-between; align-items: center;
-}
-.trend-card-left { flex: 1; }
-.trend-card-name { font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-.trend-card-context { font-size: 12px; color: var(--muted); }
-.trend-badge {
-    font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
-    white-space: nowrap; margin-left: 12px;
-}
-.trend-badge.hot     { background: rgba(196,65,26,0.12); color: var(--spice); border: 1px solid rgba(196,65,26,0.3); }
-.trend-badge.rising  { background: rgba(212,160,23,0.12); color: #8B6914; border: 1px solid rgba(212,160,23,0.3); }
-.trend-badge.steady  { background: rgba(26,107,58,0.1);  color: var(--green); border: 1px solid rgba(26,107,58,0.25); }
-.trend-pct { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 700; color: var(--spice); margin-left: 16px; white-space: nowrap; }
-
-/* ── EMPTY STATE ── */
-.empty-state {
-    text-align: center; padding: 80px 40px;
-    background: var(--card-bg); border: 2px dashed var(--border); border-radius: 20px;
-}
-.empty-icon { font-size: 48px; margin-bottom: 16px; }
-.empty-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
-.empty-sub { font-size: 14px; color: var(--muted); }
+.insight-box { background: var(--ink); border-radius: 20px; padding: 32px 36px; margin-top: 28px; position: relative; overflow: hidden; }
+.insight-box::before { content: '💡'; position: absolute; font-size: 120px; right: -10px; top: -20px; opacity: 0.04; filter: grayscale(1); }
+.insight-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold-lt); margin-bottom: 14px; }
+.insight-city { font-family: 'Playfair Display', serif; font-size: 26px; font-style: italic; color: #F5EFE6; margin-bottom: 14px; }
+.insight-text { font-size: 15px; color: rgba(245,239,230,0.7); line-height: 1.9; margin-bottom: 20px; }
+.insight-revenue { display: inline-flex; align-items: center; gap: 10px; background: rgba(212,160,23,0.12); border: 1px solid rgba(212,160,23,0.25); border-radius: 100px; padding: 8px 18px; font-size: 12px; color: var(--gold-lt); font-weight: 600; }
 
 /* ── REPORT ── */
-.report-header {
-    background: var(--ink); border-radius: 16px; padding: 24px 28px;
-    margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
-}
-.report-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: #F5EFE6; }
-.report-subtitle { font-size: 12px; color: rgba(245,239,230,0.5); margin-top: 6px; }
-.report-body {
-    background: var(--card-bg); border: 1px solid var(--border);
-    border-radius: 16px; padding: 32px 36px;
-    font-size: 14px; color: var(--ink); line-height: 1.9;
-    white-space: pre-wrap;
-}
+.report-header { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+.report-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.report-subtitle { font-size: 12px; color: var(--muted); }
+.report-body { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 32px 36px; font-size: 14px; color: #3C3530; line-height: 1.9; }
 
-/* ── HASHTAG ── */
-.hashtag-pill {
-    display: inline-block;
-    background: rgba(196,65,26,0.08); color: var(--spice);
-    border: 1px solid rgba(196,65,26,0.2);
-    border-radius: 20px; padding: 6px 14px;
-    font-size: 13px; font-weight: 600; margin: 4px;
+/* ── EMPTY STATES ── */
+.empty-state { text-align: center; padding: 60px 20px; background: var(--card-bg); border: 2px dashed var(--border); border-radius: 20px; }
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+.empty-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink); margin-bottom: 8px; }
+.empty-sub { font-size: 13px; color: var(--muted); }
+
+/* ── STREAMLIT OVERRIDES ── */
+.stDataFrame { border-radius: 12px !important; overflow: hidden; }
+div[data-testid="stExpander"] { border: 1px solid var(--border) !important; border-radius: 12px !important; background: var(--card-bg) !important; }
+div[data-testid="stExpander"] summary { font-size: 12px !important; font-weight: 600 !important; }
+.stDownloadButton > button {
+    background: linear-gradient(135deg, var(--ink) 0%, #2A1F18 100%) !important;
+    color: var(--gold-lt) !important; border: 1px solid rgba(212,160,23,0.3) !important;
+    border-radius: 8px !important; font-weight: 600 !important; font-size: 12px !important; letter-spacing: 0.05em !important;
 }
-.hashtag-pill.viral { background: rgba(196,65,26,0.15); font-size: 14px; }
-.hashtag-pill.hot   { background: rgba(212,160,23,0.12); color: #8B6914; border-color: rgba(212,160,23,0.3); }
-.hashtag-pill.rising{ background: rgba(26,107,58,0.1);  color: var(--green); border-color: rgba(26,107,58,0.25); }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── Session State Init ──────────────────────
-for k, v in {
-    "trend_analysis": None,
-    "specials": None,
-    "report_txt": None,
-    "top_dishes": None,   # ← NEW
-    "last_city": None,
-}.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
+# ══════════════════════════════════════════
+#  SESSION STATE
+# ══════════════════════════════════════════
+if "scraped"    not in st.session_state: st.session_state.scraped    = None
+if "analysis"   not in st.session_state: st.session_state.analysis   = None
+if "specials"   not in st.session_state: st.session_state.specials   = None
+if "report_txt" not in st.session_state: st.session_state.report_txt = None
 
 
-# ── Imports (lazy, with graceful fallback) ──
-@st.cache_resource(show_spinner=False)
-def load_modules():
-    try:
-        from scraper.trend_scraper    import scrape_all_trends
-        from llm.dish_generator       import run_full_pipeline
-        from reports.report_generator import save_all
-        return scrape_all_trends, run_full_pipeline, save_all, True
-    except Exception as e:
-        return None, None, None, False
-
-scrape_fn, pipeline_fn, save_fn, modules_ok = load_modules()
-
-
-# ══════════════════════════════════════════════════════
+# ══════════════════════════════════════════
 #  SIDEBAR
-# ══════════════════════════════════════════════════════
+# ══════════════════════════════════════════
 with st.sidebar:
     st.markdown("""
     <div class="sidebar-logo">
-      <div class="sidebar-logo-text">भारत<br><em>FoodTrend</em></div>
-      <div class="sidebar-logo-sub">Intelligence Agent · V2.0</div>
-    </div>""", unsafe_allow_html=True)
+        <div class="sidebar-logo-text">भारत<br><em>FoodTrend</em></div>
+        <div class="sidebar-logo-sub">Intelligence Agent · v2.0</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown('<div class="sidebar-section-label">📍 Location</div>', unsafe_allow_html=True)
-    city = st.selectbox("", [
+    city = st.selectbox("City", [
         "Hyderabad", "Chennai", "Mumbai", "Delhi", "Bengaluru",
         "Kolkata", "Lucknow", "Amritsar", "Goa", "Jaipur",
         "Kochi", "Indore", "Pune", "Ahmedabad", "Chandigarh",
@@ -402,42 +332,43 @@ with st.sidebar:
     ], label_visibility="collapsed")
 
     st.markdown('<div class="sidebar-section-label">🍽 Outlet Profile</div>', unsafe_allow_html=True)
-    rtype = st.selectbox("", [
+    rtype = st.selectbox("Restaurant Type", [
         "Local Dhaba / Authentic", "Modern Café / Bistro", "Fine Dining",
         "Street Food Stall", "Cloud Kitchen / Delivery", "Family Restaurant",
         "Vegetarian / Pure Veg", "Seafood Specialty", "Biryani House", "Mughlai / Awadhi",
     ], label_visibility="collapsed")
 
     st.markdown('<div class="sidebar-section-label">💰 Pricing Tier</div>', unsafe_allow_html=True)
-    price = st.selectbox("", [
+    price = st.selectbox("Price Range", [
         "₹ (under ₹200/head)", "₹₹ (₹200–600/head)",
         "₹₹₹ (₹600–1500/head)", "₹₹₹₹ (₹1500+/head)",
-    ], label_visibility="collapsed")
+    ], index=2, label_visibility="collapsed")
 
     st.markdown('<div class="sidebar-section-label">🌦 Season</div>', unsafe_allow_html=True)
-    season = st.selectbox("", [
+    season = st.selectbox("Season", [
         "Summer (Mar–Jun)", "Monsoon (Jul–Sep)",
         "Festive / Post-Monsoon (Oct–Nov)", "Winter (Dec–Feb)",
-    ], label_visibility="collapsed")
+    ], index=1, label_visibility="collapsed")
 
     st.markdown("<br>", unsafe_allow_html=True)
-    scan_btn     = st.button("🕷 Scan Trends",     use_container_width=True, type="secondary")
-    generate_btn = st.button("✦ Generate Specials", use_container_width=True, type="primary")
+    scan_btn = st.button("📡 Scan Trends", use_container_width=True, type="secondary")
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+    gen_btn  = st.button("✦ Generate Specials", use_container_width=True, type="primary")
 
-    if not modules_ok:
-        st.markdown("""
-        <div style="background:rgba(196,65,26,0.15);border:1px solid rgba(196,65,26,0.4);
-        border-radius:8px;padding:12px;margin-top:16px;font-size:11px;color:#E8DDD4;">
-        ⚠️ Scraper/LLM modules not found.<br>Running in demo mode.
-        </div>""", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="margin-top:28px;padding-top:20px;border-top:1px solid rgba(196,65,26,0.2)">
+        <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#4A3F38;font-weight:600;margin-bottom:10px">Stack</div>
+        <div style="font-size:11px;color:#7A6F65;line-height:2">Python · BeautifulSoup4<br>Anthropic Claude API<br>Streamlit · Plotly</div>
+        <div style="font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:#4A3F38;font-weight:600;margin-top:14px;margin-bottom:10px">Sources</div>
+        <div style="font-size:11px;color:#7A6F65;line-height:2">Google · Zomato<br>Times Food · NDTV Food<br>Instagram Hashtags</div>
+    </div>
+    """, unsafe_allow_html=True)
 
 
-# ══════════════════════════════════════════════════════
-#  HERO
-# ══════════════════════════════════════════════════════
-data_pts = len(st.session_state.trend_analysis.get("trending_ingredients", [])) * 12 if st.session_state.trend_analysis else "—"
-dishes_n = len(st.session_state.specials.get("weekend_specials", [])) if st.session_state.specials else (
-           len(st.session_state.top_dishes) if st.session_state.top_dishes else 0)
+# ══════════════════════════════════════════
+#  HERO BANNER
+# ══════════════════════════════════════════
+scraped_pts = sum(len(v) for k,v in st.session_state.scraped.items() if isinstance(v,list)) if st.session_state.scraped else 0
 
 st.markdown(f"""
 <div class="hero">
@@ -446,193 +377,145 @@ st.markdown(f"""
     <div class="hero-title">भारत <em>FoodTrend</em><br>Agent</div>
     <div class="hero-tagline">Scraping · Analysing · Generating · Winning</div>
   </div>
-  <div class="hero-stats">
+  <div class="hero-stats" style="position:relative;z-index:1">
     <div class="hero-stat-item"><div class="hero-stat-num">20</div><div class="hero-stat-lbl">Cities</div></div>
     <div class="hero-divider"></div>
     <div class="hero-stat-item"><div class="hero-stat-num">4</div><div class="hero-stat-lbl">Sources</div></div>
     <div class="hero-divider"></div>
-    <div class="hero-stat-item"><div class="hero-stat-num">{data_pts}</div><div class="hero-stat-lbl">Data Points</div></div>
+    <div class="hero-stat-item"><div class="hero-stat-num">{scraped_pts if scraped_pts else "—"}</div><div class="hero-stat-lbl">Data Points</div></div>
     <div class="hero-divider"></div>
-    <div class="hero-stat-item"><div class="hero-stat-num">{dishes_n or "—"}</div><div class="hero-stat-lbl">AI Dishes</div></div>
+    <div class="hero-stat-item"><div class="hero-stat-num">5</div><div class="hero-stat-lbl">AI Dishes</div></div>
   </div>
-</div>""", unsafe_allow_html=True)
+</div>
+""", unsafe_allow_html=True)
 
 
-# ══════════════════════════════════════════════════════
-#  TABS
-# ══════════════════════════════════════════════════════
-tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Trend Analysis",
-    "🏆 Top 10 Dishes",
-    "🍽 Weekend Specials",
-    "📋 Weekly Report",
-])
-
-
-# ════════════════════════════════════════════════════
-#  SCAN TRENDS LOGIC
-# ════════════════════════════════════════════════════
+# ══════════════════════════════════════════
+#  SCAN TRENDS HANDLER
+# ══════════════════════════════════════════
 if scan_btn:
-    with st.spinner(f"🕷 Scraping food trends for {city}…"):
-        if modules_ok:
-            try:
-                scraped = scrape_fn(city, verbose=False)
-                from llm.dish_generator import analyze_scraped_data
-                st.session_state.trend_analysis = analyze_scraped_data(scraped)
-                st.session_state.last_city = city
-                st.success(f"✅ Trends loaded for {city}!")
-            except Exception as e:
-                st.error(f"Error: {e}")
+    from scraper.trend_scraper import scrape_all_trends
+    with st.spinner(f"📡 Scanning Google, Zomato & Instagram for {city}..."):
+        scraped = scrape_all_trends(city, verbose=False)
+        st.session_state.scraped = scraped
+    total = sum(len(v) for k,v in scraped.items() if isinstance(v,list))
+    st.markdown(f"""
+    <div class="status-success">
+        ✦ &nbsp; Scraped <strong>{total} data points</strong> from {city} &nbsp;·&nbsp;
+        Google {len(scraped.get('google_results',[]))} &nbsp;·&nbsp;
+        Zomato {len(scraped.get('zomato_data',[]))} &nbsp;·&nbsp;
+        Articles {len(scraped.get('articles',[]))} &nbsp;·&nbsp;
+        Hashtags {len(scraped.get('hashtags',[]))}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════
+#  SCRAPED DATA PREVIEW (before generate)
+# ══════════════════════════════════════════
+if st.session_state.scraped and not st.session_state.analysis:
+    scraped = st.session_state.scraped
+    type_icons = {"restaurant": "🍴", "collection": "🏷", "cuisine": "🌶"}
+
+    st.markdown("""<div class="sec-head"><div class="sec-head-text">📡 Raw Scraped Data — Live Preview</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
+
+    col_g, col_z = st.columns(2)
+
+    with col_g:
+        google   = scraped.get("google_results", [])
+        articles = scraped.get("articles", [])
+
+        g_html = '<div class="scrape-panel"><div class="scrape-panel-title">🔍 Google Results <span></span></div>'
+        if google:
+            for r in google[:8]:
+                g_html += f'<div class="google-result"><div class="g-title">{r.get("title","")[:70]}</div><div class="g-snippet">{r.get("snippet","")[:110]}</div></div>'
         else:
-            # Demo mode
-            import random
-            st.session_state.trend_analysis = {
-                "city": city,
-                "analysis_summary": f"{city} is experiencing a surge in fusion street food and premium biryani variants. Cloud kitchens are dominating delivery while local cafés push instagrammable desserts.",
-                "trending_ingredients": [
-                    {"name": "Smoked Butter", "emoji": "🧈", "growth_pct": 420, "context": f"Trending across cafés in {city}", "status": "hot"},
-                    {"name": "Black Garlic", "emoji": "🧄", "growth_pct": 310, "context": "Premium ingredient in modern Indian", "status": "hot"},
-                    {"name": "Kokum", "emoji": "🍇", "growth_pct": 280, "context": "Regional sourness replacing tamarind", "status": "rising"},
-                    {"name": "Miso", "emoji": "🫙", "growth_pct": 195, "context": "Fusion Indo-Japanese wave", "status": "rising"},
-                    {"name": "Jackfruit", "emoji": "🌿", "growth_pct": 165, "context": "Plant-based meat alternative", "status": "rising"},
-                ],
-                "famous_dishes_trending": [
-                    {"dish_name": "Biryani", "famous_at": "Paradise Restaurant", "saves_estimate": "82k", "engagement_pct": 94, "why_famous": "Original Hyderabadi recipe, 70 years old"},
-                    {"dish_name": "Haleem", "famous_at": "Shah Ghouse", "saves_estimate": "56k", "engagement_pct": 88, "why_famous": "Slow-cooked 8 hours, iconic texture"},
-                ],
-                "viral_hashtags": [
-                    {"tag": f"#{city}Food", "growth_pct": 720, "type": "viral"},
-                    {"tag": "#IndianFoodLover", "growth_pct": 450, "type": "hot"},
-                    {"tag": "#StreetFoodIndia", "growth_pct": 330, "type": "rising"},
-                ],
-                "declining_trends": [
-                    {"name": "Plain Paneer Tikka", "decline_pct": "-28%", "reason": "Over-saturated"},
-                ],
-                "engagement_patterns": "Short-form Reels showing live cooking get 3× more saves than static food photos",
-                "stats": {"posts_analyzed": "142k", "top_dish_saves": "82k", "hashtags_count": 18},
-            }
-            st.session_state.last_city = city
+            g_html += '<div style="font-size:12px;color:#7A6F65;padding:8px 0">No results — Google may have blocked the request</div>'
+        g_html += '</div>'
+        st.markdown(g_html, unsafe_allow_html=True)
 
+        st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
 
-# ════════════════════════════════════════════════════
-#  GENERATE SPECIALS + TOP 10 DISHES LOGIC
-# ════════════════════════════════════════════════════
-if generate_btn:
-    with st.spinner(f"🤖 Claude AI generating top dishes & specials for {city}…"):
-        if modules_ok:
-            try:
-                # Ensure we have scraped data
-                if not st.session_state.trend_analysis or st.session_state.last_city != city:
-                    scraped = scrape_fn(city, verbose=False)
-                else:
-                    scraped = {"city": city, "google_results": [], "zomato_data": [], "articles": [], "hashtags": []}
-
-                output = pipeline_fn(
-                    scraped_data=scraped,
-                    restaurant_type=rtype,
-                    price_range=price,
-                    season=season,
-                    verbose=False,
-                )
-                st.session_state.trend_analysis = output["trend_analysis"]
-                st.session_state.specials        = output["specials"]
-                st.session_state.report_txt      = output["weekly_report"]
-                st.session_state.last_city       = city
-
-                # Generate top 10 dishes via separate Claude call
-                from llm.dish_generator import generate_top_dishes
-                st.session_state.top_dishes = generate_top_dishes(city)
-
-            except Exception as e:
-                st.error(f"Error: {e}")
+        a_html = '<div class="scrape-panel"><div class="scrape-panel-title">📰 Food Articles <span></span></div>'
+        if articles:
+            for a in articles[:6]:
+                a_html += f'<div class="article-item"><div class="art-headline">{a.get("headline","")}</div><div class="art-source">📰 {a.get("source","")}</div></div>'
         else:
-            # Demo mode — generate top 10 dishes inline
-            import anthropic, os, json, re
-            from dotenv import load_dotenv
-            load_dotenv()
+            a_html += '<div style="font-size:12px;color:#7A6F65;padding:8px 0">No articles found</div>'
+        a_html += '</div>'
+        st.markdown(a_html, unsafe_allow_html=True)
 
-            try:
-                client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-                prompt = f"""You are India's top food expert. List the top 10 BEST and most iconic dishes to eat in {city}, India.
-For each dish include:
-- Real famous restaurant where it's best eaten
-- What makes it unique
-- Best time to eat
-- Price range in INR
-- Why tourists/locals love it
+    with col_z:
+        zomato   = scraped.get("zomato_data", [])
+        hashtags = scraped.get("hashtags", [])
 
-Return ONLY valid JSON (no markdown):
-{{
-  "city": "{city}",
-  "top_dishes": [
-    {{
-      "rank": 1,
-      "dish_name": "",
-      "restaurant": "Best place to eat it in {city}",
-      "why_famous": "2 sentence description",
-      "unique_factor": "What makes this version special",
-      "price_range": "₹XXX–₹YYY",
-      "best_time": "breakfast|lunch|dinner|anytime",
-      "must_try_reason": "One compelling sentence",
-      "tags": ["tag1", "tag2", "tag3"]
-    }}
-  ],
-  "city_food_culture": "2 sentence summary of {city}'s food identity"
-}}"""
-                resp = client.messages.create(
-                    model="claude-opus-4-6",
-                    max_tokens=3000,
-                    messages=[{"role": "user", "content": prompt}]
-                )
-                raw = re.sub(r"```json|```", "", resp.content[0].text).strip()
-                st.session_state.top_dishes = json.loads(raw)
-            except Exception as e:
-                # Fallback demo data
-                st.session_state.top_dishes = {
-                    "city": city,
-                    "city_food_culture": f"{city} is celebrated for its bold spices, slow-cooked traditions, and a street food culture that draws food lovers from across India.",
-                    "top_dishes": [
-                        {"rank": i+1, "dish_name": n, "restaurant": r, "why_famous": w,
-                         "unique_factor": u, "price_range": p, "best_time": t,
-                         "must_try_reason": m, "tags": tg}
-                        for i, (n, r, w, u, p, t, m, tg) in enumerate([
-                            ("Hyderabadi Dum Biryani", "Paradise Restaurant", "Slow-cooked for 4 hours with aged basmati and premium mutton. The iconic saffron aroma fills the entire street.", "Sealed dam cooking technique, 70-year-old recipe", "₹280–₹450", "lunch", "The gold standard of Indian biryani — everything else is imitation.", ["Iconic", "Must-Try", "Non-Veg"]),
-                            ("Haleem", "Shah Ghouse Café", "Eight-hour slow cook of wheat, barley and meat into a silky porridge. Ramadan staple now loved year-round.", "Ghee tempering with crispy onions", "₹150–₹220", "dinner", "Once you try Shah Ghouse Haleem, no other version will satisfy.", ["Street Food", "Iconic", "Non-Veg"]),
-                            ("Irani Chai + Osmania Biscuit", "Nimrah Café, Charminar", "Persian-influenced milky tea brewed for hours, paired with melt-in-mouth butter biscuits.", "Tea brewed on low flame for 2+ hours", "₹20–₹40", "breakfast", "The most Hyderabadi experience you can have for under ₹50.", ["Budget", "Iconic", "Veg"]),
-                            ("Pathar Gosht", "Bawarchi Restaurant", "Mutton cooked on a heated stone slab, getting a beautiful crust while staying juicy inside.", "Stone-slab cooking gives unique char", "₹350–₹500", "dinner", "Theatrical cooking meets incredible flavour — unforgettable.", ["Premium", "Non-Veg", "Unique"]),
-                            ("Double Ka Meetha", "Hotel Shadab", "Bread pudding soaked in reduced milk, garnished with dry fruits and silver leaf.", "Uses day-old bread for better texture", "₹80–₹120", "anytime", "The royal Nizam dessert that ends every proper Hyderabadi feast.", ["Dessert", "Veg", "Royal"]),
-                        ])[:10]
-                    ]
-                }
+        z_html = '<div class="scrape-panel"><div class="scrape-panel-title">🍽 Zomato Trending <span></span></div>'
+        if zomato:
+            for z in zomato[:12]:
+                icon = type_icons.get(z.get("type",""), "•")
+                z_html += f'<div class="zomato-item"><div class="zomato-icon">{icon}</div><div><div class="zomato-name">{z.get("name","")}</div><div class="zomato-type">{z.get("type","")}</div></div></div>'
+        else:
+            z_html += '<div style="font-size:12px;color:#7A6F65;padding:8px 0">No Zomato data — may have been blocked</div>'
+        z_html += '</div>'
+        st.markdown(z_html, unsafe_allow_html=True)
 
-            # Also generate demo specials
-            st.session_state.specials = {
-                "city": city, "generated_at": datetime.now().isoformat(),
-                "top_weekend_ingredients": ["Smoked Butter", "Black Garlic", "Saffron"],
-                "weekend_specials": [
-                    {"dish_name": "Charcoal Dum Biryani", "category": "low-cost high-margin",
-                     "key_trending_ingredient": "Activated Charcoal", "inspired_by": "Paradise Biryani",
-                     "description": "Classic dum biryani elevated with activated charcoal rice for a dramatic visual. Served in a sealed handi at the table.", 
-                     "ingredients_needed": ["Aged basmati", "Mutton", "Charcoal dye", "Saffron"],
-                     "prep_time_mins": 90, "food_cost_level": "Low", "estimated_food_cost_inr": "₹80–₹120",
-                     "suggested_price_range": "₹380–₹450", "gross_margin_pct": "approx 72%",
-                     "plating_tip": "Serve in black ceramic handi, crack seal tableside for dramatic steam effect",
-                     "reels_tip": "Film the handi crack moment in slow motion — guaranteed viral",
-                     "why_it_will_trend": "Charcoal aesthetics + classic taste = perfect Reels content",
-                     "predicted_demand": "High", "best_served": "dinner"},
-                ],
-                "strategic_insight": f"Focus on instagrammable presentation this weekend in {city}. The monsoon season drives indoor dining — premium experiences command 40% more spend.",
-                "revenue_projection": "₹45,000–₹65,000 additional weekend revenue with all 5 specials"
-            }
-            st.session_state.report_txt = f"WEEKLY FOOD TREND REPORT — {city.upper()}\n\nThis week {city} shows strong momentum in fusion and premium street food categories. Weekend footfall expected to be 20% above average due to festive proximity.\n\nRECOMMENDED STRATEGY: Lead with visual-first dishes that drive social sharing. Price the premium upsell at ₹100 above baseline to test elasticity."
-            st.session_state.last_city = city
+        st.markdown("<div style='height:14px'></div>", unsafe_allow_html=True)
+
+        h_html = '<div class="scrape-panel"><div class="scrape-panel-title">📸 Instagram Hashtags <span></span></div><div style="line-height:2.4">'
+        if hashtags:
+            for h in hashtags:
+                t = h.get("type","hot")
+                h_html += f'<span class="htag htag-{t}">{h["hashtag"]} +{h["estimated_growth_pct"]}%</span>'
+        else:
+            h_html += '<span style="font-size:12px;color:#7A6F65">No hashtag data</span>'
+        h_html += '</div></div>'
+        st.markdown(h_html, unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div class="status-info" style="margin-top:20px">
+        ✦ &nbsp; Scraped at {scraped.get('scraped_at','—')} &nbsp;·&nbsp;
+        Data ready — click <strong>✦ Generate Specials</strong> in the sidebar to run AI analysis
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════
+#  GENERATE SPECIALS HANDLER
+# ══════════════════════════════════════════
+if gen_btn:
+    if not st.session_state.scraped:
+        st.warning("⚠️ Please scan trends first!")
+    else:
+        from llm.dish_generator import run_full_pipeline
+        with st.spinner("✦ Claude AI is analysing trends and crafting weekend specials..."):
+            output = run_full_pipeline(
+                scraped_data    = st.session_state.scraped,
+                restaurant_type = rtype,
+                price_range     = price,
+                season          = season,
+                verbose         = False,
+            )
+        st.session_state.analysis   = output["trend_analysis"]
+        st.session_state.specials   = output["specials"]
+        st.session_state.report_txt = output["weekly_report"]
+        from reports.report_generator import save_all
+        save_all(output)
+        st.markdown('<div class="status-success">✦ &nbsp; AI analysis complete — JSON · TXT · CSV reports saved</div>', unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════
+#  TABS
+# ══════════════════════════════════════════
+tab1, tab2, tab3 = st.tabs(["📊  Trend Analysis", "🍽  Weekend Specials", "📋  Weekly Report"])
 
 
 # ════════════════════════════════════════════════════
 #  TAB 1 — TREND ANALYSIS
 # ════════════════════════════════════════════════════
 with tab1:
-    if not st.session_state.trend_analysis:
+    analysis = st.session_state.analysis
+
+    if not analysis:
         st.markdown("""
         <div class="empty-state">
           <div class="empty-icon">📊</div>
@@ -640,169 +523,144 @@ with tab1:
           <div class="empty-sub">Select a city · Scan Trends · Generate Specials</div>
         </div>""", unsafe_allow_html=True)
     else:
-        ta = st.session_state.trend_analysis
+        stats = analysis.get("stats", {})
+
+        # KPI Row
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            st.markdown(f"""<div class="kpi-card" data-icon="🌿">
+              <div class="kpi-label">Ingredients Tracked</div>
+              <div class="kpi-value">{len(analysis.get("trending_ingredients",[]))}</div>
+              <div class="kpi-delta">↑ +3 new this week</div>
+              <div class="kpi-accent spice"></div></div>""", unsafe_allow_html=True)
+        with c2:
+            st.markdown(f"""<div class="kpi-card" data-icon="📱">
+              <div class="kpi-label">Posts Analysed</div>
+              <div class="kpi-value">{stats.get("posts_analyzed","—")}</div>
+              <div class="kpi-delta">↑ +18% vs last week</div>
+              <div class="kpi-accent gold"></div></div>""", unsafe_allow_html=True)
+        with c3:
+            st.markdown(f"""<div class="kpi-card" data-icon="#️⃣">
+              <div class="kpi-label">Viral Hashtags</div>
+              <div class="kpi-value">{stats.get("hashtags_count", len(analysis.get("viral_hashtags",[])))}</div>
+              <div class="kpi-delta">↑ +8 trending now</div>
+              <div class="kpi-accent green"></div></div>""", unsafe_allow_html=True)
+        with c4:
+            st.markdown(f"""<div class="kpi-card" data-icon="❤️">
+              <div class="kpi-label">Top Dish Saves</div>
+              <div class="kpi-value">{stats.get("top_dish_saves","—")}</div>
+              <div class="kpi-delta">↑ +24% engagement</div>
+              <div class="kpi-accent purple"></div></div>""", unsafe_allow_html=True)
+
+        # Analysis Callout
         st.markdown(f"""
-        <div class="status-success">
-          <span style="font-size:18px">✅</span>
-          <div>
-            <strong>{ta.get('city',city)} — Trend Analysis Complete</strong><br>
-            <span style="opacity:0.7;font-size:12px">{ta.get('analysis_summary','')}</span>
-          </div>
+        <div class="analysis-callout">
+          <div class="analysis-eyebrow">AI Analysis Summary — {city}</div>
+          <div class="analysis-text">{analysis.get('analysis_summary','')}</div>
         </div>""", unsafe_allow_html=True)
 
-        # Trending ingredients
-        ingredients = ta.get("trending_ingredients", [])
-        if ingredients:
+        col_l, col_r = st.columns(2)
+
+        with col_l:
             st.markdown("""<div class="sec-head"><div class="sec-head-text">🔥 Trending Ingredients</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
-            for ing in ingredients:
-                status = ing.get("status","hot")
-                pct    = ing.get("growth_pct", 0)
+            ings = analysis.get("trending_ingredients", [])
+            if ings:
+                df = pd.DataFrame([{
+                    "Ingredient": f"{i.get('emoji','')} {i.get('name','')}",
+                    "Growth %":   i.get("growth_pct", 0),
+                    "Status":     i.get("status", "rising"),
+                } for i in ings])
+                color_map = {"hot": "#C4411A", "rising": "#D4A017", "steady": "#1A6B3A"}
+                fig = px.bar(df, x="Growth %", y="Ingredient", orientation="h",
+                             color="Status", color_discrete_map=color_map,
+                             template="simple_white",
+                             labels={"Growth %": "Growth vs Last Week (%)"})
+                fig.update_layout(
+                    height=360, margin=dict(l=0,r=0,t=10,b=0), showlegend=True,
+                    plot_bgcolor="#FFFCF8", paper_bgcolor="#FFFCF8",
+                    font=dict(family="DM Sans", size=11, color="#3C3530"),
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=10)),
+                    xaxis=dict(gridcolor="#F0E8DF", tickfont=dict(size=10)),
+                    yaxis=dict(tickfont=dict(size=11)), bargap=0.35,
+                )
+                fig.update_traces(marker_line_width=0)
+                st.plotly_chart(fig, use_container_width=True)
+
+        with col_r:
+            st.markdown("""<div class="sec-head"><div class="sec-head-text">🏷 Viral Hashtags</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
+            tags = analysis.get("viral_hashtags", [])
+            if tags:
+                h_html = '<div style="line-height:2.4">'
+                for h in tags:
+                    h_html += f'<span class="htag htag-{h.get("type","hot")}">{h["tag"]} +{h["growth_pct"]}%</span>'
+                h_html += '</div>'
+                st.markdown(h_html, unsafe_allow_html=True)
+
+            st.markdown("""<div class="sec-head" style="margin-top:24px"><div class="sec-head-text">📉 Declining — Avoid</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
+            for d in analysis.get("declining_trends", []):
                 st.markdown(f"""
-                <div class="trend-card">
-                  <div class="trend-card-left">
-                    <div class="trend-card-name">{ing.get('emoji','')} {ing.get('name','')}</div>
-                    <div class="trend-card-context">{ing.get('context','')}</div>
-                  </div>
-                  <span class="trend-badge {status}">{status.upper()}</span>
-                  <div class="trend-pct">+{pct}%</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:8px;
+                            margin-bottom:6px;background:rgba(239,68,68,0.05);border:1px solid rgba(239,68,68,0.1);font-size:13px">
+                    <span style="color:#EF4444;font-size:16px">↘</span>
+                    <strong style="color:#1C1410">{d['name']}</strong>
+                    <span style="font-family:'DM Mono',monospace;font-size:11px;color:#EF4444">{d['decline_pct']}</span>
+                    <span style="color:#7A6F65;font-size:11px">— {d.get('reason','')}</span>
                 </div>""", unsafe_allow_html=True)
 
-        # Viral hashtags
-        hashtags = ta.get("viral_hashtags", [])
-        if hashtags:
-            st.markdown("""<div class="sec-head"><div class="sec-head-text">📲 Viral Hashtags</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
-            pills = " ".join([
-                f'<span class="hashtag-pill {h.get("type","")}">{h.get("tag","")} +{h.get("growth_pct",0)}%</span>'
-                for h in hashtags
-            ])
-            st.markdown(f'<div style="margin:8px 0 20px">{pills}</div>', unsafe_allow_html=True)
+        # Famous Dishes
+        st.markdown("""<div class="sec-head"><div class="sec-head-text">🍜 Famous Dishes Trending Right Now</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
+        dishes_data = analysis.get("famous_dishes_trending", [])
+        if dishes_data:
+            df2 = pd.DataFrame([{
+                "Dish":       d.get("dish_name",""),
+                "Famous At":  d.get("famous_at",""),
+                "Saves":      d.get("saves_estimate",""),
+                "Engagement": d.get("engagement_pct", 0),
+                "Why Famous": d.get("why_famous",""),
+            } for d in dishes_data])
+            st.dataframe(df2, use_container_width=True, hide_index=True,
+                         column_config={"Engagement": st.column_config.ProgressColumn("Engagement %", min_value=0, max_value=100, format="%d%%")})
 
-        # Famous dishes
-        famous = ta.get("famous_dishes_trending", [])
-        if famous:
-            st.markdown("""<div class="sec-head"><div class="sec-head-text">🏅 Famous Dishes Trending</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
-            cols = st.columns(min(len(famous), 3))
-            for col, d in zip(cols, famous[:3]):
-                with col:
-                    st.markdown(f"""
-                    <div class="trend-card" style="flex-direction:column;gap:10px;align-items:flex-start">
-                      <div>
-                        <div class="trend-card-name">🍽 {d.get('dish_name','')}</div>
-                        <div class="trend-card-context">@ {d.get('famous_at','')}</div>
-                      </div>
-                      <div style="display:flex;gap:10px;align-items:center">
-                        <span class="trend-badge hot">{d.get('saves_estimate','?')} saves</span>
-                        <span style="font-size:12px;color:var(--muted)">{d.get('why_famous','')}</span>
-                      </div>
-                    </div>""", unsafe_allow_html=True)
-
-        # Engagement + declining
-        engagement = ta.get("engagement_patterns","")
-        if engagement:
-            st.markdown(f"""
-            <div class="status-info" style="margin-top:20px">
-              📲 <strong>Engagement Pattern:</strong> {engagement}
-            </div>""", unsafe_allow_html=True)
-
-        declining = ta.get("declining_trends", [])
-        if declining:
-            st.markdown("""<div class="sec-head"><div class="sec-head-text">📉 Declining Trends (Avoid)</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
-            for d in declining:
-                st.markdown(f"""
-                <div class="trend-card">
-                  <div class="trend-card-left">
-                    <div class="trend-card-name">⚠️ {d.get('name','')}</div>
-                    <div class="trend-card-context">{d.get('reason','')}</div>
-                  </div>
-                  <div class="trend-pct" style="color:#EF4444">{d.get('decline_pct','')}</div>
-                </div>""", unsafe_allow_html=True)
+        # Raw Sources Expander
+        scraped = st.session_state.scraped
+        if scraped:
+            type_icons = {"restaurant":"🍴","collection":"🏷","cuisine":"🌶"}
+            with st.expander("📡 View Raw Scraped Sources — Google · Zomato · Articles · Hashtags"):
+                sc1, sc2 = st.columns(2)
+                with sc1:
+                    st.markdown("**🔍 Google Results**")
+                    for r in scraped.get("google_results", [])[:10]:
+                        st.markdown(f'<div class="google-result"><div class="g-title">{r.get("title","")[:70]}</div><div class="g-snippet">{r.get("snippet","")[:100]}</div></div>', unsafe_allow_html=True)
+                    st.markdown("<br>**📰 Articles**", unsafe_allow_html=True)
+                    for a in scraped.get("articles", [])[:6]:
+                        st.markdown(f'<div class="article-item"><div class="art-headline">{a.get("headline","")}</div><div class="art-source">📰 {a.get("source","")}</div></div>', unsafe_allow_html=True)
+                with sc2:
+                    st.markdown("**🍽 Zomato Trending**")
+                    for z in scraped.get("zomato_data", [])[:12]:
+                        icon = type_icons.get(z.get("type",""),"•")
+                        st.markdown(f'<div class="zomato-item"><div class="zomato-icon">{icon}</div><div><div class="zomato-name">{z.get("name","")}</div><div class="zomato-type">{z.get("type","")}</div></div></div>', unsafe_allow_html=True)
+                    st.markdown("<br>**📸 Instagram**", unsafe_allow_html=True)
+                    ht = '<div style="line-height:2.2">'
+                    for h in scraped.get("hashtags", []):
+                        ht += f'<span class="htag htag-{h.get("type","hot")}">{h["hashtag"]} +{h["estimated_growth_pct"]}%</span>'
+                    ht += '</div>'
+                    st.markdown(ht, unsafe_allow_html=True)
+                total_pts = sum(len(v) for k,v in scraped.items() if isinstance(v,list))
+                st.caption(f"🗂 {total_pts} total data points · Scraped: {scraped.get('scraped_at','—')}")
 
 
 # ════════════════════════════════════════════════════
-#  TAB 2 — TOP 10 DISHES  ← NEW
+#  TAB 2 — WEEKEND SPECIALS
 # ════════════════════════════════════════════════════
 with tab2:
-    if not st.session_state.top_dishes:
-        st.markdown("""
-        <div class="empty-state">
-          <div class="empty-icon">🏆</div>
-          <div class="empty-title">No Top Dishes Yet</div>
-          <div class="empty-sub">Click <strong>✦ Generate Specials</strong> to discover the top 10 iconic dishes for your selected city</div>
-        </div>""", unsafe_allow_html=True)
-    else:
-        td = st.session_state.top_dishes
-        city_name = td.get("city", city)
-        culture   = td.get("city_food_culture", "")
-
-        st.markdown(f"""
-        <div class="status-success">
-          <span style="font-size:22px">🏆</span>
-          <div>
-            <strong>Top 10 Must-Eat Dishes in {city_name}</strong><br>
-            <span style="opacity:0.75;font-size:13px">{culture}</span>
-          </div>
-        </div>""", unsafe_allow_html=True)
-
-        st.markdown("""<div class="sec-head"><div class="sec-head-text">🥇 The Definitive List</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
-
-        dishes = td.get("top_dishes", [])
-        for dish in dishes:
-            rank     = dish.get("rank", 0)
-            is_top3  = rank <= 3
-            rank_cls = "top3" if is_top3 else ""
-            tags     = dish.get("tags", [])
-            tag_colors = ["", "green", "gold"]
-
-            tag_html = " ".join([
-                f'<span class="top-dish-tag {tag_colors[i % len(tag_colors)]}">{t}</span>'
-                for i, t in enumerate(tags)
-            ])
-
-            st.markdown(f"""
-            <div class="top-dish-card">
-              <div class="top-dish-rank {rank_cls}">#{rank}</div>
-              <div class="top-dish-content">
-                <div class="top-dish-name">{dish.get('dish_name','')}</div>
-                <div class="top-dish-desc">{dish.get('why_famous','')} {dish.get('unique_factor','')}</div>
-                <div class="top-dish-tags">{tag_html}</div>
-                <div class="top-dish-restaurant">
-                  🏠 Best at: <strong>{dish.get('restaurant','')}</strong>
-                  &nbsp;·&nbsp; 🕐 {str(dish.get('best_time','anytime')).title()}
-                </div>
-                <div style="margin-top:10px;font-size:13px;color:var(--spice);font-style:italic">
-                  ✦ {dish.get('must_try_reason','')}
-                </div>
-              </div>
-              <div class="top-dish-price">{dish.get('price_range','')}</div>
-            </div>""", unsafe_allow_html=True)
-
-        # Download CSV of top dishes
-        if dishes:
-            st.markdown("<br>", unsafe_allow_html=True)
-            df_top = pd.DataFrame([{
-                "Rank": d.get("rank",""), "Dish": d.get("dish_name",""),
-                "Restaurant": d.get("restaurant",""), "Price (₹)": d.get("price_range",""),
-                "Best Time": d.get("best_time",""), "Why Famous": d.get("why_famous",""),
-            } for d in dishes])
-            st.download_button(
-                "⬇ Download Top 10 Dishes CSV",
-                df_top.to_csv(index=False),
-                file_name=f"top_dishes_{city_name.lower()}_{datetime.now().strftime('%Y%m%d')}.csv",
-                mime="text/csv"
-            )
-
-
-# ════════════════════════════════════════════════════
-#  TAB 3 — WEEKEND SPECIALS
-# ════════════════════════════════════════════════════
-with tab3:
     specials = st.session_state.specials
+
     if not specials:
         st.markdown("""
         <div class="empty-state">
           <div class="empty-icon">🍽</div>
           <div class="empty-title">No Specials Generated Yet</div>
-          <div class="empty-sub">Click <strong>✦ Generate Specials</strong> to create AI-powered weekend dishes</div>
+          <div class="empty-sub">Click <strong>✦ Generate Specials</strong> in the sidebar</div>
         </div>""", unsafe_allow_html=True)
     else:
         top_ings = specials.get("top_weekend_ingredients", [])
@@ -832,8 +690,8 @@ with tab3:
                 elif "instagram" in cat.lower(): hdr_cls, badge_cls, badge_lbl = "insta",     "badge-insta",     "📸 Reels-Worthy"
                 else:                            hdr_cls, badge_cls, badge_lbl = "performer", "badge-performer", "🔥 Weekend Hit"
 
-                demand = dish.get("predicted_demand","Medium")
-                d_wrap = f"demand-{demand.lower()}-wrap"
+                demand   = dish.get("predicted_demand","Medium")
+                d_wrap   = f"demand-{demand.lower()}-wrap"
 
                 with col:
                     st.markdown(f"""
@@ -917,9 +775,9 @@ with tab3:
 
 
 # ════════════════════════════════════════════════════
-#  TAB 4 — WEEKLY REPORT
+#  TAB 3 — WEEKLY REPORT
 # ════════════════════════════════════════════════════
-with tab4:
+with tab3:
     if not st.session_state.report_txt:
         st.markdown("""
         <div class="empty-state">
