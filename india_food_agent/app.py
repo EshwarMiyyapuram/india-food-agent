@@ -13,8 +13,29 @@ import plotly.express as px
 import plotly.graph_objects as go
 from pathlib import Path
 from datetime import datetime
+import base64
+import requests
 
 sys.path.insert(0, str(Path(__file__).parent))
+
+# ── Server-side image fetcher → base64 embed (bypasses ALL browser hotlink/CSP blocks) ──
+@st.cache_data(ttl=86400, show_spinner=False)
+def img_to_b64(url: str) -> str:
+    """Fetch image server-side, return as base64 data URI so browser never calls external URL."""
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        "Referer": "https://en.wikipedia.org/",
+        "Accept": "image/webp,image/apng,image/*,*/*;q=0.8",
+    }
+    try:
+        r = requests.get(url, headers=headers, timeout=10)
+        if r.status_code == 200 and "image" in r.headers.get("content-type", ""):
+            ct = r.headers.get("content-type", "image/jpeg").split(";")[0]
+            b64 = base64.b64encode(r.content).decode()
+            return f"data:{ct};base64,{b64}"
+    except Exception:
+        pass
+    return "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
 
 # ── City Landmarks Data ──────────────────
 CITY_LANDMARKS = {
@@ -530,10 +551,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#2D1B69 0%,#1A0A3C 100%)",
         "accent": "#A78BFA",
         "places": [
-            {"name": "Charminar", "emoji": "🕌", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Charminar_Hyderabad.jpg/400px-Charminar_Hyderabad.jpg&w=400&h=300&fit=cover"},
-            {"name": "Golconda Fort", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Golconda_fort_near_hyderabad.jpg/400px-Golconda_fort_near_hyderabad.jpg&w=400&h=300&fit=cover"},
-            {"name": "Hussain Sagar", "emoji": "🌊", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Hussain_Sagar_Lake%2C_Hyderabad.jpg/400px-Hussain_Sagar_Lake%2C_Hyderabad.jpg&w=400&h=300&fit=cover"},
-            {"name": "Ramoji Film City", "emoji": "🎬", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/6/61/Ramoji_Film_City.jpg/400px-Ramoji_Film_City.jpg&w=400&h=300&fit=cover"},
+            {"name": "Charminar", "emoji": "🕌", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Charminar_Hyderabad.jpg/400px-Charminar_Hyderabad.jpg"},
+            {"name": "Golconda Fort", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Golconda_fort_near_hyderabad.jpg/400px-Golconda_fort_near_hyderabad.jpg"},
+            {"name": "Hussain Sagar", "emoji": "🌊", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Hussain_Sagar_Lake%2C_Hyderabad.jpg/400px-Hussain_Sagar_Lake%2C_Hyderabad.jpg"},
+            {"name": "Ramoji Film City", "emoji": "🎬", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Ramoji_Film_City.jpg/400px-Ramoji_Film_City.jpg"},
         ],
         "tagline": "City of Nizams & Biryani",
         "food_icon": "🍛",
@@ -543,10 +564,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#0C4A6E 0%,#082F49 100%)",
         "accent": "#38BDF8",
         "places": [
-            {"name": "Chepauk Stadium", "emoji": "🏏", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d6/MA_Chidambaram_Stadium.jpg/400px-MA_Chidambaram_Stadium.jpg&w=400&h=300&fit=cover"},
-            {"name": "Marina Beach", "emoji": "🏖️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Marina_Beach_Chennai.jpg/400px-Marina_Beach_Chennai.jpg&w=400&h=300&fit=cover"},
-            {"name": "Kapaleeshwarar Temple", "emoji": "🛕", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/56/Kapaleeshwarar_temple.jpg/400px-Kapaleeshwarar_temple.jpg&w=400&h=300&fit=cover"},
-            {"name": "Fort St. George", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Fort_St._George%2C_Chennai.jpg/400px-Fort_St._George%2C_Chennai.jpg&w=400&h=300&fit=cover"},
+            {"name": "Chepauk Stadium", "emoji": "🏏", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/MA_Chidambaram_Stadium.jpg/400px-MA_Chidambaram_Stadium.jpg"},
+            {"name": "Marina Beach", "emoji": "🏖️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Marina_Beach_Chennai.jpg/400px-Marina_Beach_Chennai.jpg"},
+            {"name": "Kapaleeshwarar Temple", "emoji": "🛕", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Kapaleeshwarar_temple.jpg/400px-Kapaleeshwarar_temple.jpg"},
+            {"name": "Fort St. George", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Fort_St._George%2C_Chennai.jpg/400px-Fort_St._George%2C_Chennai.jpg"},
         ],
         "tagline": "Gateway of South India",
         "food_icon": "🍜",
@@ -556,10 +577,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#7F1D1D 0%,#450A0A 100%)",
         "accent": "#FCA5A5",
         "places": [
-            {"name": "Gateway of India", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Mumbai_03-2016_30_Gateway_of_India.jpg/400px-Mumbai_03-2016_30_Gateway_of_India.jpg&w=400&h=300&fit=cover"},
-            {"name": "Marine Drive", "emoji": "🌃", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Marine_Drive_Mumbai.jpg/400px-Marine_Drive_Mumbai.jpg&w=400&h=300&fit=cover"},
-            {"name": "Elephanta Caves", "emoji": "🗿", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Elephanta_Caves_entrance.jpg/400px-Elephanta_Caves_entrance.jpg&w=400&h=300&fit=cover"},
-            {"name": "Chhatrapati Terminus", "emoji": "🚂", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Mumbai_CST_station_building.jpg/400px-Mumbai_CST_station_building.jpg&w=400&h=300&fit=cover"},
+            {"name": "Gateway of India", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Mumbai_03-2016_30_Gateway_of_India.jpg/400px-Mumbai_03-2016_30_Gateway_of_India.jpg"},
+            {"name": "Marine Drive", "emoji": "🌃", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Marine_Drive_Mumbai.jpg/400px-Marine_Drive_Mumbai.jpg"},
+            {"name": "Elephanta Caves", "emoji": "🗿", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Elephanta_Caves_entrance.jpg/400px-Elephanta_Caves_entrance.jpg"},
+            {"name": "Chhatrapati Terminus", "emoji": "🚂", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Mumbai_CST_station_building.jpg/400px-Mumbai_CST_station_building.jpg"},
         ],
         "tagline": "City of Dreams & Street Food",
         "food_icon": "🥙",
@@ -569,10 +590,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#78350F 0%,#451A03 100%)",
         "accent": "#FCD34D",
         "places": [
-            {"name": "Red Fort", "emoji": "🏯", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/6/61/RedFort_Main_Gate.jpg/400px-RedFort_Main_Gate.jpg&w=400&h=300&fit=cover"},
-            {"name": "India Gate", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/5f/India_gate.jpg/400px-India_gate.jpg&w=400&h=300&fit=cover"},
-            {"name": "Qutub Minar", "emoji": "🕌", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Qtub_Minar.JPG/400px-Qtub_Minar.JPG&w=400&h=300&fit=cover"},
-            {"name": "Lotus Temple", "emoji": "🌸", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/44/Delhi_Lotus_temple.jpg/400px-Delhi_Lotus_temple.jpg&w=400&h=300&fit=cover"},
+            {"name": "Red Fort", "emoji": "🏯", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/RedFort_Main_Gate.jpg/400px-RedFort_Main_Gate.jpg"},
+            {"name": "India Gate", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/India_gate.jpg/400px-India_gate.jpg"},
+            {"name": "Qutub Minar", "emoji": "🕌", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Qtub_Minar.JPG/400px-Qtub_Minar.JPG"},
+            {"name": "Lotus Temple", "emoji": "🌸", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Delhi_Lotus_temple.jpg/400px-Delhi_Lotus_temple.jpg"},
         ],
         "tagline": "Heart of India & Mughlai Cuisine",
         "food_icon": "🍢",
@@ -582,10 +603,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#064E3B 0%,#022C22 100%)",
         "accent": "#6EE7B7",
         "places": [
-            {"name": "Lalbagh Botanical Garden", "emoji": "🌿", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Lalbagh_Garden_Bangalore.jpg/400px-Lalbagh_Garden_Bangalore.jpg&w=400&h=300&fit=cover"},
-            {"name": "Bangalore Palace", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/55/BangalorePalace.jpg/400px-BangalorePalace.jpg&w=400&h=300&fit=cover"},
-            {"name": "Vidhana Soudha", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vidhana_Soudha_Bangalore.jpg/400px-Vidhana_Soudha_Bangalore.jpg&w=400&h=300&fit=cover"},
-            {"name": "ISKCON Temple", "emoji": "🛕", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/96/ISKCON_Bangalore.jpg/400px-ISKCON_Bangalore.jpg&w=400&h=300&fit=cover"},
+            {"name": "Lalbagh Botanical Garden", "emoji": "🌿", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Lalbagh_Garden_Bangalore.jpg/400px-Lalbagh_Garden_Bangalore.jpg"},
+            {"name": "Bangalore Palace", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/BangalorePalace.jpg/400px-BangalorePalace.jpg"},
+            {"name": "Vidhana Soudha", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Vidhana_Soudha_Bangalore.jpg/400px-Vidhana_Soudha_Bangalore.jpg"},
+            {"name": "ISKCON Temple", "emoji": "🛕", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/ISKCON_Bangalore.jpg/400px-ISKCON_Bangalore.jpg"},
         ],
         "tagline": "Silicon Valley & Filter Coffee Capital",
         "food_icon": "☕",
@@ -595,10 +616,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#831843 0%,#500724 100%)",
         "accent": "#F9A8D4",
         "places": [
-            {"name": "Victoria Memorial", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Victoria_Memorial_in_Kolkata.jpg/400px-Victoria_Memorial_in_Kolkata.jpg&w=400&h=300&fit=cover"},
-            {"name": "Howrah Bridge", "emoji": "🌉", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/96/Howrah_Bridge.jpg/400px-Howrah_Bridge.jpg&w=400&h=300&fit=cover"},
-            {"name": "Dakshineswar Temple", "emoji": "🛕", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/ac/DakshineswarTemple.jpg/400px-DakshineswarTemple.jpg&w=400&h=300&fit=cover"},
-            {"name": "Park Street", "emoji": "🛍️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/46/Park_Street_Kolkata.jpg/400px-Park_Street_Kolkata.jpg&w=400&h=300&fit=cover"},
+            {"name": "Victoria Memorial", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Victoria_Memorial_in_Kolkata.jpg/400px-Victoria_Memorial_in_Kolkata.jpg"},
+            {"name": "Howrah Bridge", "emoji": "🌉", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Howrah_Bridge.jpg/400px-Howrah_Bridge.jpg"},
+            {"name": "Dakshineswar Temple", "emoji": "🛕", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/DakshineswarTemple.jpg/400px-DakshineswarTemple.jpg"},
+            {"name": "Park Street", "emoji": "🛍️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Park_Street_Kolkata.jpg/400px-Park_Street_Kolkata.jpg"},
         ],
         "tagline": "City of Joy & Rosogolla",
         "food_icon": "🍬",
@@ -608,10 +629,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#4C1D95 0%,#2E1065 100%)",
         "accent": "#C4B5FD",
         "places": [
-            {"name": "Bara Imambara", "emoji": "🕌", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/51/Bara_Imambara.jpg/400px-Bara_Imambara.jpg&w=400&h=300&fit=cover"},
-            {"name": "Chota Imambara", "emoji": "🏯", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Chhota_Imambara.jpg/400px-Chhota_Imambara.jpg&w=400&h=300&fit=cover"},
-            {"name": "Rumi Darwaza", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Rumi_Darwaza_Lucknow.jpg/400px-Rumi_Darwaza_Lucknow.jpg&w=400&h=300&fit=cover"},
-            {"name": "Hazratganj", "emoji": "🛍️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Hazratganj_Lucknow.jpg/400px-Hazratganj_Lucknow.jpg&w=400&h=300&fit=cover"},
+            {"name": "Bara Imambara", "emoji": "🕌", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Bara_Imambara.jpg/400px-Bara_Imambara.jpg"},
+            {"name": "Chota Imambara", "emoji": "🏯", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Chhota_Imambara.jpg/400px-Chhota_Imambara.jpg"},
+            {"name": "Rumi Darwaza", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Rumi_Darwaza_Lucknow.jpg/400px-Rumi_Darwaza_Lucknow.jpg"},
+            {"name": "Hazratganj", "emoji": "🛍️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Hazratganj_Lucknow.jpg/400px-Hazratganj_Lucknow.jpg"},
         ],
         "tagline": "City of Nawabs & Kebabs",
         "food_icon": "🥩",
@@ -621,10 +642,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#92400E 0%,#451A03 100%)",
         "accent": "#FDE68A",
         "places": [
-            {"name": "Golden Temple", "emoji": "🛕", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/94/Golden_Temple_Amritsar_2.jpg/400px-Golden_Temple_Amritsar_2.jpg&w=400&h=300&fit=cover"},
-            {"name": "Jallianwala Bagh", "emoji": "🌺", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/46/Jallianwala_Bagh%2C_Amritsar.jpg/400px-Jallianwala_Bagh%2C_Amritsar.jpg&w=400&h=300&fit=cover"},
-            {"name": "Wagah Border", "emoji": "🇮🇳", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Wagah_border_ceremony.jpg/400px-Wagah_border_ceremony.jpg&w=400&h=300&fit=cover"},
-            {"name": "Durgiana Temple", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/58/Durgiana_Temple_Amritsar.jpg/400px-Durgiana_Temple_Amritsar.jpg&w=400&h=300&fit=cover"},
+            {"name": "Golden Temple", "emoji": "🛕", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Golden_Temple_Amritsar_2.jpg/400px-Golden_Temple_Amritsar_2.jpg"},
+            {"name": "Jallianwala Bagh", "emoji": "🌺", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Jallianwala_Bagh%2C_Amritsar.jpg/400px-Jallianwala_Bagh%2C_Amritsar.jpg"},
+            {"name": "Wagah Border", "emoji": "🇮🇳", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Wagah_border_ceremony.jpg/400px-Wagah_border_ceremony.jpg"},
+            {"name": "Durgiana Temple", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Durgiana_Temple_Amritsar.jpg/400px-Durgiana_Temple_Amritsar.jpg"},
         ],
         "tagline": "Holy City & Makki di Roti Hub",
         "food_icon": "🫓",
@@ -634,10 +655,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#164E63 0%,#0C2D40 100%)",
         "accent": "#67E8F9",
         "places": [
-            {"name": "Calangute Beach", "emoji": "🏖️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/44/Calangute_beach_goa.jpg/400px-Calangute_beach_goa.jpg&w=400&h=300&fit=cover"},
-            {"name": "Basilica of Bom Jesus", "emoji": "⛪", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/59/Bom_jesus_basilica_goa.jpg/400px-Bom_jesus_basilica_goa.jpg&w=400&h=300&fit=cover"},
-            {"name": "Fort Aguada", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Aguada_Fort.jpg/400px-Aguada_Fort.jpg&w=400&h=300&fit=cover"},
-            {"name": "Dudhsagar Falls", "emoji": "🌊", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/54/Dudhsagar_Falls-Goa.jpg/400px-Dudhsagar_Falls-Goa.jpg&w=400&h=300&fit=cover"},
+            {"name": "Calangute Beach", "emoji": "🏖️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Calangute_beach_goa.jpg/400px-Calangute_beach_goa.jpg"},
+            {"name": "Basilica of Bom Jesus", "emoji": "⛪", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Bom_jesus_basilica_goa.jpg/400px-Bom_jesus_basilica_goa.jpg"},
+            {"name": "Fort Aguada", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Aguada_Fort.jpg/400px-Aguada_Fort.jpg"},
+            {"name": "Dudhsagar Falls", "emoji": "🌊", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Dudhsagar_Falls-Goa.jpg/400px-Dudhsagar_Falls-Goa.jpg"},
         ],
         "tagline": "Beach Paradise & Seafood Heaven",
         "food_icon": "🦞",
@@ -647,10 +668,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#881337 0%,#4C0519 100%)",
         "accent": "#FDA4AF",
         "places": [
-            {"name": "Hawa Mahal", "emoji": "🏯", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Hawa_Mahal_Jaipur.jpg/400px-Hawa_Mahal_Jaipur.jpg&w=400&h=300&fit=cover"},
-            {"name": "Amer Fort", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Amer_Fort_Jaipur.jpg/400px-Amer_Fort_Jaipur.jpg&w=400&h=300&fit=cover"},
-            {"name": "City Palace", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/f8/City_Palace_Jaipur.jpg/400px-City_Palace_Jaipur.jpg&w=400&h=300&fit=cover"},
-            {"name": "Jantar Mantar", "emoji": "🔭", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/24/Jantar_Mantar_Jaipur.jpg/400px-Jantar_Mantar_Jaipur.jpg&w=400&h=300&fit=cover"},
+            {"name": "Hawa Mahal", "emoji": "🏯", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Hawa_Mahal_Jaipur.jpg/400px-Hawa_Mahal_Jaipur.jpg"},
+            {"name": "Amer Fort", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Amer_Fort_Jaipur.jpg/400px-Amer_Fort_Jaipur.jpg"},
+            {"name": "City Palace", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/City_Palace_Jaipur.jpg/400px-City_Palace_Jaipur.jpg"},
+            {"name": "Jantar Mantar", "emoji": "🔭", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Jantar_Mantar_Jaipur.jpg/400px-Jantar_Mantar_Jaipur.jpg"},
         ],
         "tagline": "Pink City & Dal Baati Churma",
         "food_icon": "🍲",
@@ -660,10 +681,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#064E3B 0%,#022C22 100%)",
         "accent": "#6EE7B7",
         "places": [
-            {"name": "Chinese Fishing Nets", "emoji": "🎣", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Chinese_fishing_nets_in_Kerala.jpg/400px-Chinese_fishing_nets_in_Kerala.jpg&w=400&h=300&fit=cover"},
-            {"name": "Fort Kochi Beach", "emoji": "🏖️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fort_Kochi_Beach.jpg/400px-Fort_Kochi_Beach.jpg&w=400&h=300&fit=cover"},
-            {"name": "Mattancherry Palace", "emoji": "🏯", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Mattancherry_Dutch_Palace.jpg/400px-Mattancherry_Dutch_Palace.jpg&w=400&h=300&fit=cover"},
-            {"name": "Jew Town Synagogue", "emoji": "🕍", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Paradesi_Synagogue%2C_Kochi.jpg/400px-Paradesi_Synagogue%2C_Kochi.jpg&w=400&h=300&fit=cover"},
+            {"name": "Chinese Fishing Nets", "emoji": "🎣", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Chinese_fishing_nets_in_Kerala.jpg/400px-Chinese_fishing_nets_in_Kerala.jpg"},
+            {"name": "Fort Kochi Beach", "emoji": "🏖️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Fort_Kochi_Beach.jpg/400px-Fort_Kochi_Beach.jpg"},
+            {"name": "Mattancherry Palace", "emoji": "🏯", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Mattancherry_Dutch_Palace.jpg/400px-Mattancherry_Dutch_Palace.jpg"},
+            {"name": "Jew Town Synagogue", "emoji": "🕍", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Paradesi_Synagogue%2C_Kochi.jpg/400px-Paradesi_Synagogue%2C_Kochi.jpg"},
         ],
         "tagline": "Queen of Arabian Sea & Seafood",
         "food_icon": "🐟",
@@ -673,10 +694,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#4C1D95 0%,#2E1065 100%)",
         "accent": "#DDD6FE",
         "places": [
-            {"name": "Rajwada Palace", "emoji": "🏯", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Rajwada_Palace%2C_Indore.jpg/400px-Rajwada_Palace%2C_Indore.jpg&w=400&h=300&fit=cover"},
-            {"name": "Lal Bagh Palace", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/37/Lalbagh_Palace_Indore.jpg/400px-Lalbagh_Palace_Indore.jpg&w=400&h=300&fit=cover"},
-            {"name": "Sarafa Bazaar", "emoji": "🌃", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Sarafa_Bazaar_Indore.jpg/400px-Sarafa_Bazaar_Indore.jpg&w=400&h=300&fit=cover"},
-            {"name": "Kanch Mandir", "emoji": "💎", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/52/Kanch_mandir_indore.jpg/400px-Kanch_mandir_indore.jpg&w=400&h=300&fit=cover"},
+            {"name": "Rajwada Palace", "emoji": "🏯", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Rajwada_Palace%2C_Indore.jpg/400px-Rajwada_Palace%2C_Indore.jpg"},
+            {"name": "Lal Bagh Palace", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Lalbagh_Palace_Indore.jpg/400px-Lalbagh_Palace_Indore.jpg"},
+            {"name": "Sarafa Bazaar", "emoji": "🌃", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Sarafa_Bazaar_Indore.jpg/400px-Sarafa_Bazaar_Indore.jpg"},
+            {"name": "Kanch Mandir", "emoji": "💎", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Kanch_mandir_indore.jpg/400px-Kanch_mandir_indore.jpg"},
         ],
         "tagline": "Cleanest City & Street Food Capital",
         "food_icon": "🥘",
@@ -686,10 +707,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#78350F 0%,#451A03 100%)",
         "accent": "#FCD34D",
         "places": [
-            {"name": "Shaniwar Wada", "emoji": "🏯", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/31/Shaniwar_Wada_Pune.jpg/400px-Shaniwar_Wada_Pune.jpg&w=400&h=300&fit=cover"},
-            {"name": "Aga Khan Palace", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Aga_Khan_Palace_Pune.jpg/400px-Aga_Khan_Palace_Pune.jpg&w=400&h=300&fit=cover"},
-            {"name": "Sinhagad Fort", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Sinhagad_Fort.jpg/400px-Sinhagad_Fort.jpg&w=400&h=300&fit=cover"},
-            {"name": "Osho Ashram", "emoji": "🌸", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Osho_International_Meditation_Resort_Pune.jpg/400px-Osho_International_Meditation_Resort_Pune.jpg&w=400&h=300&fit=cover"},
+            {"name": "Shaniwar Wada", "emoji": "🏯", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Shaniwar_Wada_Pune.jpg/400px-Shaniwar_Wada_Pune.jpg"},
+            {"name": "Aga Khan Palace", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Aga_Khan_Palace_Pune.jpg/400px-Aga_Khan_Palace_Pune.jpg"},
+            {"name": "Sinhagad Fort", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Sinhagad_Fort.jpg/400px-Sinhagad_Fort.jpg"},
+            {"name": "Osho Ashram", "emoji": "🌸", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Osho_International_Meditation_Resort_Pune.jpg/400px-Osho_International_Meditation_Resort_Pune.jpg"},
         ],
         "tagline": "Oxford of East & Misal Pav",
         "food_icon": "🥗",
@@ -699,10 +720,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#075985 0%,#0C4A6E 100%)",
         "accent": "#7DD3FC",
         "places": [
-            {"name": "Sabarmati Ashram", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Sabarmati_Ashram_Ahmedabad.jpg/400px-Sabarmati_Ashram_Ahmedabad.jpg&w=400&h=300&fit=cover"},
-            {"name": "Adalaj Stepwell", "emoji": "🌊", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/48/Adalaj_stepwell_-_perspective_view.jpg/400px-Adalaj_stepwell_-_perspective_view.jpg&w=400&h=300&fit=cover"},
-            {"name": "Akshardham Temple", "emoji": "🛕", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/32/Akshardham_Temple_Gujarat.jpg/400px-Akshardham_Temple_Gujarat.jpg&w=400&h=300&fit=cover"},
-            {"name": "Kankaria Lake", "emoji": "🌅", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Kankaria_Lake_at_Ahmedabad.jpg/400px-Kankaria_Lake_at_Ahmedabad.jpg&w=400&h=300&fit=cover"},
+            {"name": "Sabarmati Ashram", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Sabarmati_Ashram_Ahmedabad.jpg/400px-Sabarmati_Ashram_Ahmedabad.jpg"},
+            {"name": "Adalaj Stepwell", "emoji": "🌊", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Adalaj_stepwell_-_perspective_view.jpg/400px-Adalaj_stepwell_-_perspective_view.jpg"},
+            {"name": "Akshardham Temple", "emoji": "🛕", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Akshardham_Temple_Gujarat.jpg/400px-Akshardham_Temple_Gujarat.jpg"},
+            {"name": "Kankaria Lake", "emoji": "🌅", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Kankaria_Lake_at_Ahmedabad.jpg/400px-Kankaria_Lake_at_Ahmedabad.jpg"},
         ],
         "tagline": "Manchester of India & Dhokla City",
         "food_icon": "🫔",
@@ -712,10 +733,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#164E63 0%,#083344 100%)",
         "accent": "#A5F3FC",
         "places": [
-            {"name": "Rock Garden", "emoji": "🪨", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/97/Rock_garden_Chandigarh.jpg/400px-Rock_garden_Chandigarh.jpg&w=400&h=300&fit=cover"},
-            {"name": "Sukhna Lake", "emoji": "🚣", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sukhna_Lake_Chandigarh.jpg/400px-Sukhna_Lake_Chandigarh.jpg&w=400&h=300&fit=cover"},
-            {"name": "Rose Garden", "emoji": "🌹", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/6/63/Chandigarh_Rose_Garden.jpg/400px-Chandigarh_Rose_Garden.jpg&w=400&h=300&fit=cover"},
-            {"name": "Capitol Complex", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Capitol_Complex_Chandigarh.jpg/400px-Capitol_Complex_Chandigarh.jpg&w=400&h=300&fit=cover"},
+            {"name": "Rock Garden", "emoji": "🪨", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Rock_garden_Chandigarh.jpg/400px-Rock_garden_Chandigarh.jpg"},
+            {"name": "Sukhna Lake", "emoji": "🚣", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Sukhna_Lake_Chandigarh.jpg/400px-Sukhna_Lake_Chandigarh.jpg"},
+            {"name": "Rose Garden", "emoji": "🌹", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Chandigarh_Rose_Garden.jpg/400px-Chandigarh_Rose_Garden.jpg"},
+            {"name": "Capitol Complex", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Capitol_Complex_Chandigarh.jpg/400px-Capitol_Complex_Chandigarh.jpg"},
         ],
         "tagline": "City Beautiful & Punjabi Cuisine",
         "food_icon": "🍗",
@@ -725,10 +746,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#92400E 0%,#78350F 100%)",
         "accent": "#FDE68A",
         "places": [
-            {"name": "Dashashwamedh Ghat", "emoji": "🛕", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Dashashwamedha_ghat_Varanasi.jpg/400px-Dashashwamedha_ghat_Varanasi.jpg&w=400&h=300&fit=cover"},
-            {"name": "Kashi Vishwanath", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Kashi_Vishwanath_Temple.jpg/400px-Kashi_Vishwanath_Temple.jpg&w=400&h=300&fit=cover"},
-            {"name": "Sarnath", "emoji": "☸️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Sarnath_stupa_%28dhamekh%29.jpg/400px-Sarnath_stupa_%28dhamekh%29.jpg&w=400&h=300&fit=cover"},
-            {"name": "Manikarnika Ghat", "emoji": "🌅", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Manikarnika_Ghat.jpg/400px-Manikarnika_Ghat.jpg&w=400&h=300&fit=cover"},
+            {"name": "Dashashwamedh Ghat", "emoji": "🛕", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Dashashwamedha_ghat_Varanasi.jpg/400px-Dashashwamedha_ghat_Varanasi.jpg"},
+            {"name": "Kashi Vishwanath", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Kashi_Vishwanath_Temple.jpg/400px-Kashi_Vishwanath_Temple.jpg"},
+            {"name": "Sarnath", "emoji": "☸️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Sarnath_stupa_%28dhamekh%29.jpg/400px-Sarnath_stupa_%28dhamekh%29.jpg"},
+            {"name": "Manikarnika Ghat", "emoji": "🌅", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Manikarnika_Ghat.jpg/400px-Manikarnika_Ghat.jpg"},
         ],
         "tagline": "Spiritual Capital & Kashi Chaat",
         "food_icon": "🥙",
@@ -738,10 +759,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#9D174D 0%,#500724 100%)",
         "accent": "#FBCFE8",
         "places": [
-            {"name": "Taj Mahal", "emoji": "🕌", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Taj_Mahal%2C_Agra%2C_India_edit3.jpg/400px-Taj_Mahal%2C_Agra%2C_India_edit3.jpg&w=400&h=300&fit=cover"},
-            {"name": "Agra Fort", "emoji": "🏰", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Agra_fort_at_India.jpg/400px-Agra_fort_at_India.jpg&w=400&h=300&fit=cover"},
-            {"name": "Fatehpur Sikri", "emoji": "🏯", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/11/Fatehpur_Sikri_Buland_Darwaza.jpg/400px-Fatehpur_Sikri_Buland_Darwaza.jpg&w=400&h=300&fit=cover"},
-            {"name": "Mehtab Bagh", "emoji": "🌿", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Mehtab_Bagh_Agra.jpg/400px-Mehtab_Bagh_Agra.jpg&w=400&h=300&fit=cover"},
+            {"name": "Taj Mahal", "emoji": "🕌", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Taj_Mahal%2C_Agra%2C_India_edit3.jpg/400px-Taj_Mahal%2C_Agra%2C_India_edit3.jpg"},
+            {"name": "Agra Fort", "emoji": "🏰", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Agra_fort_at_India.jpg/400px-Agra_fort_at_India.jpg"},
+            {"name": "Fatehpur Sikri", "emoji": "🏯", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Fatehpur_Sikri_Buland_Darwaza.jpg/400px-Fatehpur_Sikri_Buland_Darwaza.jpg"},
+            {"name": "Mehtab Bagh", "emoji": "🌿", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Mehtab_Bagh_Agra.jpg/400px-Mehtab_Bagh_Agra.jpg"},
         ],
         "tagline": "City of Taj & Petha Sweets",
         "food_icon": "🍬",
@@ -751,10 +772,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#075985 0%,#0369A1 100%)",
         "accent": "#BAE6FD",
         "places": [
-            {"name": "RK Beach", "emoji": "🏖️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/77/RK_Beach_Vizag.jpg/400px-RK_Beach_Vizag.jpg&w=400&h=300&fit=cover"},
-            {"name": "Submarine Museum", "emoji": "⚓", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/12/INS_Kursura_Museum.jpg/400px-INS_Kursura_Museum.jpg&w=400&h=300&fit=cover"},
-            {"name": "Borra Caves", "emoji": "🦇", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Borra_Caves.jpg/400px-Borra_Caves.jpg&w=400&h=300&fit=cover"},
-            {"name": "Araku Valley", "emoji": "🌄", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Araku_Valley.jpg/400px-Araku_Valley.jpg&w=400&h=300&fit=cover"},
+            {"name": "RK Beach", "emoji": "🏖️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/RK_Beach_Vizag.jpg/400px-RK_Beach_Vizag.jpg"},
+            {"name": "Submarine Museum", "emoji": "⚓", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/INS_Kursura_Museum.jpg/400px-INS_Kursura_Museum.jpg"},
+            {"name": "Borra Caves", "emoji": "🦇", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Borra_Caves.jpg/400px-Borra_Caves.jpg"},
+            {"name": "Araku Valley", "emoji": "🌄", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Araku_Valley.jpg/400px-Araku_Valley.jpg"},
         ],
         "tagline": "Jewel of East Coast & Seafood",
         "food_icon": "🦐",
@@ -764,10 +785,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#92400E 0%,#451A03 100%)",
         "accent": "#FDE68A",
         "places": [
-            {"name": "Meenakshi Amman Temple", "emoji": "🛕", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Madurai_Meenakshi_Amman_Temple.jpg/400px-Madurai_Meenakshi_Amman_Temple.jpg&w=400&h=300&fit=cover"},
-            {"name": "Thirumalai Nayakkar Palace", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Thirumalai_Naicker_Mahal.jpg/400px-Thirumalai_Naicker_Mahal.jpg&w=400&h=300&fit=cover"},
-            {"name": "Gandhi Museum", "emoji": "🏛️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/27/Gandhi_Museum_Madurai.jpg/400px-Gandhi_Museum_Madurai.jpg&w=400&h=300&fit=cover"},
-            {"name": "Vandiyur Mariamman Teppakulam", "emoji": "🌊", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/4/43/Vandiyur_Mariamman_Teppakulam%2C_Madurai.jpg/400px-Vandiyur_Mariamman_Teppakulam%2C_Madurai.jpg&w=400&h=300&fit=cover"},
+            {"name": "Meenakshi Amman Temple", "emoji": "🛕", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Madurai_Meenakshi_Amman_Temple.jpg/400px-Madurai_Meenakshi_Amman_Temple.jpg"},
+            {"name": "Thirumalai Nayakkar Palace", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Thirumalai_Naicker_Mahal.jpg/400px-Thirumalai_Naicker_Mahal.jpg"},
+            {"name": "Gandhi Museum", "emoji": "🏛️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Gandhi_Museum_Madurai.jpg/400px-Gandhi_Museum_Madurai.jpg"},
+            {"name": "Vandiyur Mariamman Teppakulam", "emoji": "🌊", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Vandiyur_Mariamman_Teppakulam%2C_Madurai.jpg/400px-Vandiyur_Mariamman_Teppakulam%2C_Madurai.jpg"},
         ],
         "tagline": "Athens of East & Jigarthanda",
         "food_icon": "🥤",
@@ -777,10 +798,10 @@ CITY_LANDMARKS = {
         "gradient": "linear-gradient(135deg,#065F46 0%,#064E3B 100%)",
         "accent": "#A7F3D0",
         "places": [
-            {"name": "Upper Lake", "emoji": "🌊", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/16/Upper_Lake_Bhopal.jpg/400px-Upper_Lake_Bhopal.jpg&w=400&h=300&fit=cover"},
-            {"name": "Sanchi Stupa", "emoji": "☸️", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/77/Sanchi_Stupa.jpg/400px-Sanchi_Stupa.jpg&w=400&h=300&fit=cover"},
-            {"name": "Taj-ul-Masajid", "emoji": "🕌", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Taj-ul-Masajid_Bhopal.jpg/400px-Taj-ul-Masajid_Bhopal.jpg&w=400&h=300&fit=cover"},
-            {"name": "Van Vihar National Park", "emoji": "🦁", "img": "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/0/09/Van_Vihar_National_Park_Bhopal.jpg/400px-Van_Vihar_National_Park_Bhopal.jpg&w=400&h=300&fit=cover"},
+            {"name": "Upper Lake", "emoji": "🌊", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Upper_Lake_Bhopal.jpg/400px-Upper_Lake_Bhopal.jpg"},
+            {"name": "Sanchi Stupa", "emoji": "☸️", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Sanchi_Stupa.jpg/400px-Sanchi_Stupa.jpg"},
+            {"name": "Taj-ul-Masajid", "emoji": "🕌", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Taj-ul-Masajid_Bhopal.jpg/400px-Taj-ul-Masajid_Bhopal.jpg"},
+            {"name": "Van Vihar National Park", "emoji": "🦁", "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Van_Vihar_National_Park_Bhopal.jpg/400px-Van_Vihar_National_Park_Bhopal.jpg"},
         ],
         "tagline": "City of Lakes & Kebab Culture",
         "food_icon": "🥩",
@@ -888,9 +909,10 @@ if city_data:
 
     landmark_cards = ""
     for p in places:
+        b64src = img_to_b64(p['img'])
         landmark_cards += f"""
         <div class="landmark-card">
-            <img src="{p['img']}" alt="{p['name']}" onerror="this.style.display='none';this.parentNode.style.background='rgba(255,255,255,0.08)'"/>
+            <img src="{b64src}" alt="{p['name']}" style="width:100%;height:100%;object-fit:cover;display:block"/>
             <div class="landmark-overlay">
                 <span class="landmark-emoji">{p['emoji']}</span>
                 <div class="landmark-name">{p['name']}</div>
@@ -923,8 +945,8 @@ if _landmarks:
     <div class="landmark-gallery">
     {"".join(f'''
       <div class="landmark-card">
-        <img src="{lm['img']}" alt="{lm['name']}" style="width:100%;height:150px;object-fit:cover;display:block" onerror="this.style.background='#2a1404';this.style.height='150px';this.removeAttribute('src')"/>
-        <div class="landmark-label"><span>{lm['emoji']}</span>{lm['name']}</div>
+        <img src="{img_to_b64(lm["img"])}" alt="{lm["name"]}" style="width:100%;height:150px;object-fit:cover;display:block"/>
+        <div class="landmark-label"><span>{lm["emoji"]}</span>{lm["name"]}</div>
       </div>''' for lm in _landmarks)}
     </div>
     """, unsafe_allow_html=True)
