@@ -910,7 +910,8 @@ if city_data:
 # ══════════════════════════════════════════
 #  CITY LANDMARK GALLERY
 # ══════════════════════════════════════════
-_landmarks = CITY_LANDMARKS.get(city, [])
+_city_data = CITY_LANDMARKS.get(city, {})
+_landmarks = _city_data.get("places", []) if isinstance(_city_data, dict) else []
 if _landmarks:
     st.markdown(f"""
     <div class="landmark-header">
@@ -922,7 +923,7 @@ if _landmarks:
     <div class="landmark-gallery">
     {"".join(f'''
       <div class="landmark-card">
-        <img src="{lm['url']}" alt="{lm['name']}" onerror="this.parentElement.style.display='none'"/>
+        <img src="{lm['img']}" alt="{lm['name']}" onerror="this.parentElement.style.display='none'"/>
         <div class="landmark-label"><span>{lm['emoji']}</span>{lm['name']}</div>
       </div>''' for lm in _landmarks)}
     </div>
