@@ -1469,147 +1469,916 @@ with tab5:
 
 
 # ════════════════════════════════════════════════════
-#  TAB 6 — AI RECIPE CHATBOT
+#  TAB 6 — RECIPE CHATBOT (No API Key Required)
 # ════════════════════════════════════════════════════
-with tab6:
-    import os
-    from anthropic import Anthropic as _Anthropic
-    from dotenv import load_dotenv as _load_dotenv
-    _load_dotenv()
 
+# ── Built-in Recipe Knowledge Base ──────────────────
+RECIPE_KB = {
+    "biryani": {
+        "title": "🍚 Hyderabadi Dum Biryani",
+        "serves": "4-5",
+        "time": "90 mins",
+        "difficulty": "Medium-Hard",
+        "ingredients": [
+            "750g basmati rice (soaked 30 mins)",
+            "1 kg mutton / chicken (bone-in)",
+            "3 large onions (thinly sliced, for birista)",
+            "1 cup yogurt",
+            "4 tbsp ghee + 3 tbsp oil",
+            "2 tsp biryani masala",
+            "1 tsp red chili powder",
+            "1 tsp turmeric",
+            "1 tbsp ginger-garlic paste",
+            "1 tsp shah jeera (caraway seeds)",
+            "4-5 green cardamom, 2 black cardamom",
+            "2 inch cinnamon stick, 6-8 cloves",
+            "Saffron soaked in ½ cup warm milk",
+            "Fresh mint & coriander leaves",
+            "Salt to taste",
+            "Kewra water (1 tbsp) — optional",
+        ],
+        "steps": [
+            "**Birista (Fried Onions):** Deep-fry sliced onions in oil until golden-brown and crispy. Drain on paper. This is the soul of Hyderabadi biryani.",
+            "**Marinate Meat:** Mix meat with yogurt, ginger-garlic paste, red chili, turmeric, biryani masala, half the birista, mint, coriander, 1 tbsp ghee. Marinate 2–4 hours (overnight best).",
+            "**Parboil Rice:** Boil rice with whole spices (cardamom, cloves, cinnamon, shah jeera) and salt until 70% cooked (grains still have a bite). Drain immediately.",
+            "**Layer:** In a heavy-bottomed pot, spread marinated meat at the bottom. Layer parboiled rice on top. Drizzle saffron milk, remaining ghee, kewra water, mint leaves, and remaining birista.",
+            "**Dum:** Seal the pot with dough or tight foil. Cook on high for 5 mins, then very low heat for 35–45 mins. Place a tawa/griddle under the pot to avoid burning.",
+            "**Rest & Serve:** Let rest 10 mins before opening. Gently mix from bottom. Serve with mirchi ka salan and raita.",
+        ],
+        "tips": [
+            "70% cooked rice = when you press a grain, it breaks but still has a chalky white center",
+            "Never skip birista — it adds the signature sweetness and colour",
+            "Seal tightly for proper dum — steam is everything",
+            "Use Daawat/India Gate Extra Long basmati for best results",
+            "If meat is raw at top, add ¼ cup water and dum for 10 more mins",
+        ],
+        "variations": "Chicken biryani: marinate 45 mins, dum for 25 mins. Veg biryani: replace meat with mixed vegetables + paneer. Kolkata biryani: add boiled egg and potato.",
+    },
+    "butter chicken": {
+        "title": "🍗 Butter Chicken (Murgh Makhani)",
+        "serves": "4",
+        "time": "45 mins",
+        "difficulty": "Easy-Medium",
+        "ingredients": [
+            "700g chicken (boneless, cubed)",
+            "**Marinade:** 1 cup yogurt, 1 tsp red chili, 1 tsp garam masala, 1 tbsp ginger-garlic paste, 1 tbsp lemon juice, 1 tbsp oil",
+            "**Makhani Sauce:** 4 large tomatoes (pureed), 1 large onion, ½ cup cashews (soaked)",
+            "3 tbsp butter + 2 tbsp oil",
+            "1 cup fresh cream",
+            "1 tsp kasuri methi (dried fenugreek leaves) — the SECRET ingredient",
+            "1 tsp sugar",
+            "1 tsp red chili powder, 1 tsp coriander powder",
+            "½ tsp garam masala",
+            "Salt to taste",
+        ],
+        "steps": [
+            "**Marinate & Grill:** Marinate chicken for 2 hours. Grill in oven at 220°C for 20 mins or cook in tandoor/air fryer until slightly charred. Set aside.",
+            "**Make Base:** Sauté onions in butter+oil until golden. Add ginger-garlic paste, cook 2 mins. Add tomato puree and cashew paste, cook on medium until oil separates (~15 mins).",
+            "**Blend:** Cool and blend the base until silky smooth. Strain through a sieve for restaurant texture.",
+            "**Build the Makhani:** Return strained sauce to pan. Add red chili, coriander powder. Simmer 5 mins. Add grilled chicken.",
+            "**Finish:** Add cream, sugar, kasuri methi (crush between palms before adding). Simmer 5 mins. Add butter at the end for gloss.",
+            "Serve with butter naan or jeera rice.",
+        ],
+        "tips": [
+            "Kasuri methi is non-negotiable — it's what makes butter chicken taste like a restaurant",
+            "Straining the sauce is the difference between home and restaurant quality",
+            "The char on chicken is essential — don't skip grilling",
+            "Add a pinch of beetroot powder for that signature orange-red colour naturally",
+            "Sugar balances the tomato acidity — don't skip it",
+        ],
+        "variations": "Veg version: replace chicken with paneer cubes + mushrooms. Malai Kofta: use kofta balls instead. Dhaba style: skip cream, use more butter.",
+    },
+    "dosa": {
+        "title": "🫔 Perfect Crispy Masala Dosa",
+        "serves": "8-10 dosas",
+        "time": "Batter: 8 hrs ferment | Cook: 30 mins",
+        "difficulty": "Medium",
+        "ingredients": [
+            "**Dosa Batter:** 3 cups idli rice (or parboiled rice), 1 cup urad dal, ½ tsp fenugreek seeds",
+            "Salt to taste",
+            "**Potato Masala:** 4 large potatoes (boiled, mashed), 2 onions (sliced), 2 green chilies",
+            "1 tsp mustard seeds, 1 tsp chana dal, 1 tsp urad dal",
+            "8-10 curry leaves, 1 tsp turmeric, 2 tbsp oil",
+            "Fresh coriander, salt to taste",
+            "**For cooking:** Oil or ghee for the tawa",
+        ],
+        "steps": [
+            "**Soak:** Soak rice and urad dal+fenugreek separately for 6-8 hours.",
+            "**Grind:** Grind urad dal first until fluffy and white (add ice-cold water). Grind rice coarser. Mix both, add salt. Batter should coat a spoon.",
+            "**Ferment:** Cover and keep in a warm place for 8-12 hours until batter doubles and smells slightly sour.",
+            "**Masala:** Temper mustard seeds, dals, curry leaves in oil. Add onions, sauté until soft. Add green chilies, turmeric, mashed potatoes. Mix well. Set aside.",
+            "**Cook Dosa:** Heat cast iron tawa until very hot. Sprinkle water — it should evaporate instantly. Add a drop of oil. Pour a ladle of batter in the center. Spread in circular motion outward quickly.",
+            "**Crisp it:** Drizzle oil/ghee on edges and top. Cook on medium-high until edges lift and bottom is golden-brown. Add masala, fold and serve immediately.",
+        ],
+        "tips": [
+            "Ice-cold water while grinding urad dal = fluffier batter (the cold prevents overheating)",
+            "The tawa temperature is everything — too cold = batter sticks; too hot = spreads unevenly",
+            "Fermentation is key — warm oven (light on) works great in winter",
+            "Never wash the tawa with soap — season it with oil after every use",
+            "Leftover batter: refrigerate up to 4 days, it gets more sour and crispy",
+        ],
+        "variations": "Neer Dosa: thin rice-only batter, no fermentation. Rava Dosa: semolina, rice flour, no fermentation (instant). Set Dosa: thick and soft, Bengaluru style. Pesarattu: moong dal dosa, Andhra style.",
+    },
+    "haleem": {
+        "title": "🥘 Hyderabadi Haleem",
+        "serves": "6-8",
+        "time": "4-5 hours (slow cook)",
+        "difficulty": "Hard",
+        "ingredients": [
+            "500g mutton (boneless, with some bone)",
+            "½ cup broken wheat (dalia)",
+            "¼ cup chana dal, ¼ cup masoor dal, ¼ cup moong dal",
+            "2 large onions (for birista)",
+            "1 tbsp ginger-garlic paste",
+            "2 tsp red chili powder, 1 tsp turmeric",
+            "2 tsp haleem masala (or garam masala)",
+            "½ cup yogurt",
+            "4 tbsp ghee",
+            "**Garnish:** Fried onions, fresh lime, mint, coriander, green chilies",
+        ],
+        "steps": [
+            "**Soak:** Soak broken wheat and all dals together for 1 hour.",
+            "**Cook Wheat & Dals:** Pressure cook wheat+dals with 4 cups water and turmeric for 4-5 whistles until completely mushy.",
+            "**Cook Meat:** In a heavy pot, cook mutton with ginger-garlic paste, red chili, yogurt, haleem masala and salt until meat is falling off the bone (45 mins pressure or 2 hrs open).",
+            "**Shred:** Remove bones. Shred/pull the mutton apart with two forks.",
+            "**Combine & Bhunao:** Add mushy dals+wheat to the mutton pot. Stir and bhuno (stir-fry) constantly on medium heat, breaking down the mixture until it becomes a thick, smooth paste. This takes 30-40 mins.",
+            "**Tarka:** Pour sizzling ghee tempered with whole spices over the haleem.",
+            "Serve topped with birista, lime, mint, green chilies and coriander.",
+        ],
+        "tips": [
+            "The bhunao step is what makes haleem — you must stir it until it becomes one unified mass",
+            "Add ghee generously at the end — haleem should be slightly glossy",
+            "Lemon at serving time is non-negotiable",
+            "Haleem tastes even better the next day",
+            "Pista House Hyderabad style: they use more wheat than dal for a thicker texture",
+        ],
+        "variations": "Kheema Haleem: use minced meat for faster cooking. Veg Haleem: replace meat with mushrooms + soya chunks. Chicken Haleem: 1.5 hrs instead of 4+ hrs.",
+    },
+    "idli": {
+        "title": "🫓 Fluffy Idli & Sambar",
+        "serves": "20 idlis",
+        "time": "Batter: overnight | Steam: 15 mins",
+        "difficulty": "Easy",
+        "ingredients": [
+            "**Idli Batter:** 2 cups idli rice, 1 cup urad dal, ½ tsp fenugreek seeds",
+            "Salt to taste, water as needed",
+            "**Sambar:** ½ cup toor dal (pigeon peas), 2 tomatoes, 1 drumstick (moringa)",
+            "1 small onion, 1 tsp tamarind paste",
+            "2 tsp sambar powder, 1 tsp turmeric",
+            "**Sambar Tarka:** Mustard, curry leaves, dry red chili, asafoetida (hing), oil",
+        ],
+        "steps": [
+            "**Soak:** Soak rice and (urad dal + fenugreek) separately for 6 hours.",
+            "**Grind:** Grind urad dal with ice-cold water until very fluffy and airy (10-12 mins in wet grinder). Grind rice coarsely. Mix, add salt. Batter should be thick but pourable.",
+            "**Ferment:** Leave covered at room temperature 10-14 hours (or overnight). It should rise and have tiny bubbles.",
+            "**Steam:** Grease idli moulds. Pour batter ¾ full. Steam in idli cooker for exactly 10-12 mins. Test with a wet finger — it should come out clean.",
+            "**Sambar:** Pressure cook toor dal with tomatoes and turmeric (3 whistles). Add drumstick, onion, tamarind, sambar powder. Simmer 15 mins. Finish with tarka.",
+            "Serve hot idlis with sambar and fresh coconut chutney.",
+        ],
+        "tips": [
+            "MTR secret: they use a 2:1 ratio of rice to urad dal. Some use 3:1 for crispier idlis.",
+            "The urad dal must be ground until completely white and fluffy — this traps air",
+            "Over-fermented batter = sour idlis. Under-fermented = dense idlis",
+            "Wet your finger before testing — a dry finger sticks to idli",
+            "Don't open the steamer during cooking — the steam drop ruins texture",
+        ],
+        "variations": "Rava Idli (MTR style): no fermentation, instant. Kanchipuram Idli: with pepper and cumin. Mini Button Idli: for kids. Stuffed Idli: with cheese or vegetable filling.",
+    },
+    "chole": {
+        "title": "🫘 Authentic Punjabi Chole Bhature",
+        "serves": "4",
+        "time": "30 mins (+ soaking)",
+        "difficulty": "Easy",
+        "ingredients": [
+            "2 cups white chickpeas (soaked overnight)",
+            "2 tea bags (for dark colour) — the restaurant secret",
+            "3 large onions (2 for paste, 1 sliced)",
+            "3 tomatoes (pureed)",
+            "1 tbsp ginger-garlic paste",
+            "2 tsp chole masala (Everest/MDH)",
+            "1 tsp anardana (pomegranate powder)",
+            "1 tsp amchur (dry mango powder)",
+            "1 tsp red chili powder, 1 tsp turmeric",
+            "1 tsp cumin seeds, 2 tbsp oil",
+            "**Bhature:** 2 cups maida, ½ cup yogurt, 1 tsp baking powder, salt, oil for deep frying",
+        ],
+        "steps": [
+            "**Cook Chickpeas:** Pressure cook soaked chickpeas with tea bags, salt and water for 5-6 whistles until very soft. Remove tea bags.",
+            "**Make Masala:** Sauté cumin in oil. Add sliced onions, cook until golden. Add ginger-garlic paste. Add onion paste (blended raw onions). Cook until raw smell goes.",
+            "**Add Tomatoes:** Add tomato puree, all spice powders. Bhuno (stir-fry) until oil separates (~10 mins).",
+            "**Combine:** Add cooked chickpeas with their water. Simmer 15-20 mins. Mash some chickpeas against the pot for thick gravy. Add anardana and amchur at the end.",
+            "**Bhature:** Mix maida, yogurt, baking powder, salt. Knead soft dough. Rest 30 mins. Roll slightly thick. Deep fry in hot oil — it puffs up immediately.",
+            "Serve with raw onion, green chili, pickle and lemon.",
+        ],
+        "tips": [
+            "Tea bags give the authentic dark grey-brown colour — without it, chole looks yellow",
+            "Anardana is what gives Punjabi chole its signature tangy depth — don't skip",
+            "Bhature must be fried in very hot oil — it should puff within 3 seconds",
+            "Mash 20% of chickpeas for naturally thick gravy without any flour",
+            "Sita Ram Diwan Chand (Delhi) secret: they add ½ tsp black cardamom powder",
+        ],
+        "variations": "Amritsari Chole: served with kulcha instead of bhature. Pindi Chole: dry version with pomegranate seeds. Vegan Chole: already vegan — just skip the yogurt in bhature, use water.",
+    },
+    "dal makhani": {
+        "title": "🫕 Dal Makhani (Bukhara Style)",
+        "serves": "4-6",
+        "time": "Overnight slow cook ideal | 3 hrs minimum",
+        "difficulty": "Easy (but requires patience)",
+        "ingredients": [
+            "1 cup whole black urad dal (whole black lentils)",
+            "¼ cup kidney beans (rajma)",
+            "2 large tomatoes (pureed) + 1 tbsp tomato paste",
+            "1 large onion (finely chopped)",
+            "1 tbsp ginger-garlic paste",
+            "100g butter (4 tbsp)",
+            "½ cup heavy cream",
+            "1 tsp red chili powder, 1 tsp coriander powder",
+            "½ tsp garam masala",
+            "Salt to taste",
+        ],
+        "steps": [
+            "**Soak:** Soak black dal and rajma together overnight (8+ hours).",
+            "**First Cook:** Pressure cook with salt for 8-10 whistles until completely soft and mushy. The dal should be so soft you can crush it between fingers.",
+            "**Bhuno Base:** Sauté onions in butter until golden. Add ginger-garlic paste. Add tomato puree + paste. Bhuno on low-medium heat for 20-25 mins until butter floats on top.",
+            "**Slow Simmer:** Add cooked dal to the masala. Stir well. Simmer on the lowest heat possible for at least 1.5-2 hours, stirring every 15 mins.",
+            "**Finish:** Add cream and half the butter. Simmer 15 more mins. Add garam masala. Top with remaining butter.",
+            "Serve with butter naan. The next day it tastes even better.",
+        ],
+        "tips": [
+            "Bukhara ITC does 18+ hours of slow cooking — longer = richer, creamier dal",
+            "The fat in butter emulsifies with the dal for a velvety texture",
+            "Never add water after the final simmer begins — it dilutes the flavour",
+            "Tomato paste (not just fresh tomatoes) gives that deep, rich base",
+            "Dhungar technique: place a small piece of coal in a steel bowl in the dal, add ghee, cover — instant smoky flavour",
+        ],
+        "variations": "Langar Dal (without cream/butter): pure urad dal with simple tomato-cumin tarka. Quick version: 30 mins pressure + 30 mins simmer.",
+    },
+    "samosa": {
+        "title": "🥟 Crispy Punjabi Samosa",
+        "serves": "12-15 samosas",
+        "time": "1 hour",
+        "difficulty": "Medium",
+        "ingredients": [
+            "**Pastry:** 2 cups maida, ¼ tsp ajwain (carom seeds), ½ tsp salt, 4 tbsp oil/ghee, cold water to knead",
+            "**Filling:** 4 boiled potatoes (mashed), ½ cup green peas",
+            "1 tsp cumin seeds, 1 tsp coriander seeds (crushed)",
+            "1 tsp amchur, 1 tsp red chili, ½ tsp garam masala",
+            "1 tsp fennel seeds (saunf)",
+            "Fresh coriander, green chili (finely chopped)",
+            "Salt to taste",
+            "Oil for deep frying",
+        ],
+        "steps": [
+            "**Make Pastry:** Mix maida, salt, ajwain, oil. Rub oil into flour until it resembles breadcrumbs (this is moyan — creates flakiness). Add cold water slowly, knead into a stiff dough. Rest 20 mins.",
+            "**Make Filling:** Dry-roast cumin and coriander, crush roughly. Mix with mashed potatoes, peas, amchur, chili, garam masala, fennel, coriander, green chili, salt.",
+            "**Shape:** Divide dough into balls. Roll into ovals. Cut in half. Form a cone, seal edges with water. Fill, seal the top tightly into a pleated edge.",
+            "**Fry:** Deep fry in medium-hot oil (160°C) — NOT hot oil. Fry slowly for 12-15 mins until golden brown and crispy. Start cold/medium oil = crispy shell.",
+            "Serve with green mint chutney and tamarind chutney.",
+        ],
+        "tips": [
+            "Moyan (oil rubbing into flour) = the KEY to flaky, non-doughy pastry",
+            "Frying at low-medium temperature is the street vendor secret — slow frying = super crispy",
+            "Stiff dough = crispier samosa. Soft dough = chewy and oily",
+            "Amchur is essential for that tangy potato filling",
+            "Seal edges very well or they'll open and absorb oil",
+        ],
+        "variations": "Baked samosa: brush with oil, bake 200°C 20-25 mins. Keema samosa: use spiced minced mutton. Chocolate samosa: Nutella + banana filling. Mini cocktail samosa: party size.",
+    },
+    "rasgulla": {
+        "title": "🍡 Bengali Rasgulla (Spongy)",
+        "serves": "20-25 rasgullas",
+        "time": "1 hour",
+        "difficulty": "Medium",
+        "ingredients": [
+            "1 litre full-fat milk",
+            "3 tbsp lemon juice or white vinegar (to curdle)",
+            "**Sugar Syrup:** 1.5 cups sugar, 5 cups water",
+            "1 tsp rose water (optional)",
+            "2-3 green cardamom pods",
+        ],
+        "steps": [
+            "**Make Chenna:** Boil milk. Add lemon juice slowly while stirring until milk curdles completely. Pour through muslin cloth, rinse with cold water (removes sourness). Hang for 30 mins to drain.",
+            "**Knead:** Knead the chenna on a flat surface for 8-10 mins until completely smooth and slightly greasy. No cracks = smooth rasgulla. This is the most important step.",
+            "**Shape:** Roll into smooth crack-free balls (they expand 2x while cooking).",
+            "**Cook Syrup:** Boil sugar + water + cardamom in a wide pot. Syrup should be thin (not sticky).",
+            "**Cook Rasgullas:** Add balls to boiling syrup. Cover and cook on MEDIUM-HIGH (syrup must boil vigorously) for exactly 15-18 mins without lifting the lid.",
+            "**Test:** A rasgulla is done when it doubles in size and doesn't spring back when pressed lightly.",
+        ],
+        "tips": [
+            "Kneading is everything — under-kneaded chenna = hard/dense rasgullas",
+            "The syrup must boil actively during cooking — low heat = dense and rubbery",
+            "Use full-fat milk only — skimmed milk won't work",
+            "Add cold water to syrup if it gets too thick while boiling",
+            "K.C. Das (Kolkata) secret: they add a tiny bit of semolina to chenna for firmness",
+        ],
+        "variations": "Rasgulla Cake: layer rasgullas with cream. Chocolate Rasgulla: add cocoa to chenna. Rajbhog: larger stuffed version with dry fruits.",
+    },
+    "filter coffee": {
+        "title": "☕ South Indian Filter Coffee (Degree Coffee)",
+        "serves": "2 cups",
+        "time": "15 mins",
+        "difficulty": "Easy",
+        "ingredients": [
+            "3 tbsp South Indian filter coffee powder (80% coffee, 20% chicory — Cothas/Leo/Narasu's brand)",
+            "1.5 cups water (for decoction)",
+            "1.5 cups full-fat milk",
+            "Sugar to taste",
+            "**Equipment:** South Indian metal coffee filter (percolator)",
+        ],
+        "steps": [
+            "**Brew Decoction:** Add coffee powder to the upper chamber of the filter. Pour hot water (just off boil) over it. Press the plunger lightly. Wait 15-20 mins for decoction to drip into the lower chamber. The decoction should be dark, strong and aromatic.",
+            "**Heat Milk:** Boil full-fat milk until it froths. The milk quality is crucial — thin milk makes weak coffee.",
+            "**Mix:** Pour 2-3 tbsp dark decoction into the tumbler (steel cup). Add hot frothing milk. Adjust ratio to taste (more decoction = stronger).",
+            "**Froth (Metre Coffee):** Pour back and forth between tumbler and davara (the wide dish) from a height 5-10 times to create froth and cool it slightly.",
+            "Serve in the steel tumbler-davara set. Sip from the davara — it cools faster.",
+        ],
+        "tips": [
+            "The chicory blend is non-negotiable — it gives that unique bittersweet flavour",
+            "Boil milk — don't just warm it. The slight caramelisation of hot milk is key",
+            "The metre coffee (pouring from height) is a ritual — it aerates and creates the signature froth",
+            "Decoction ratio: 2 tbsp per cup is standard. Adjust for strength",
+            "Nimrah Café Hyderabad adds cardamom; Coorg style uses 100% coffee (no chicory)",
+        ],
+        "variations": "Kaapi with jaggery instead of sugar. Beaten coffee (whipped). Cold brew: steep ground coffee in cold water 12 hours, mix with cold milk.",
+    },
+    "lassi": {
+        "title": "🥛 Authentic Punjabi Lassi",
+        "serves": "2",
+        "time": "5 mins",
+        "difficulty": "Very Easy",
+        "ingredients": [
+            "2 cups thick yogurt (full-fat, freshly set)",
+            "½ cup chilled water or milk",
+            "3-4 tbsp sugar (or to taste)",
+            "A pinch of cardamom powder",
+            "**Optional toppings:** Fresh cream, a dollop of butter, rose petals, saffron",
+        ],
+        "steps": [
+            "**Churn:** Add yogurt, water/milk, and sugar to a blender or use a traditional wooden churner (madhani).",
+            "**Blend:** Blend for 2-3 mins until frothy and smooth. The more you blend = more froth.",
+            "**Chill:** Add ice cubes or serve immediately with toppings.",
+            "Pour into tall steel glasses (Gurdas Ram Lassiwala style) or clay kulhads.",
+            "Top with a generous spoon of fresh cream and a small pat of butter for the Amritsar experience.",
+        ],
+        "tips": [
+            "Fresh homemade yogurt churned with a madhani (wooden churner) gives the most authentic result",
+            "Full-fat yogurt is essential — low-fat lassi is thin and disappointing",
+            "Gurdas Ram (Amritsar) serves it in such thick glasses that a spoon can stand in it",
+            "Sweet lassi: as above | Salty lassi: replace sugar with black salt and roasted cumin powder",
+            "Mango lassi: add 3 tbsp alphonso mango pulp while blending",
+        ],
+        "variations": "Mango lassi: add aamras. Salty lassi: black salt + cumin. Rose lassi: rose syrup + cardamom. Bhang lassi (festival): traditional Holi drink with bhang (regional preparation).",
+    },
+    "pav bhaji": {
+        "title": "🫕 Mumbai Pav Bhaji",
+        "serves": "4",
+        "time": "30 mins",
+        "difficulty": "Easy",
+        "ingredients": [
+            "3 potatoes (boiled + mashed), 1 cup cauliflower (boiled)",
+            "½ cup green peas (boiled), 1 capsicum (finely chopped)",
+            "3 tomatoes (finely chopped), 2 onions (1 for bhaji, 1 raw for garnish)",
+            "2 tbsp butter (lots of it!)",
+            "2 tsp pav bhaji masala (Everest brand)",
+            "1 tsp red chili powder, 1 tsp turmeric",
+            "1 tbsp ginger-garlic paste",
+            "Fresh coriander, lemon wedges",
+            "**Pav:** 8 soft dinner rolls",
+        ],
+        "steps": [
+            "**Start Bhaji:** Heat butter in a wide pan. Add onions, sauté until soft. Add capsicum, cook 3 mins. Add ginger-garlic paste.",
+            "**Add Tomatoes:** Add tomatoes, cook until mushy and oil separates. Add pav bhaji masala, red chili, turmeric.",
+            "**Add Veggies:** Add all mashed/boiled vegetables. Mix and mash together vigorously with a masher directly in the pan.",
+            "**Bhuno:** Keep mashing and stirring on medium heat for 10 mins. Add ½ cup water if too thick. Keep mashing. The mashing IS the cooking.",
+            "**Butter Finish:** Add more butter at the end. Top with raw onion, coriander, lemon.",
+            "**Toast Pav:** Slice pav, apply butter, toast on the same hot pan until golden.",
+        ],
+        "tips": [
+            "The masher technique: you should mash and stir simultaneously — this is Mumbai street technique",
+            "Sardar Pav Bhaji (Mumbai) uses extra butter — don't hold back",
+            "Cauliflower is the secret ingredient that most people skip",
+            "The pan should be very hot — bhaji should sizzle loudly when mashed",
+            "Add a charcoal piece and ghee for dhungar smoky flavour (optional)",
+        ],
+        "variations": "Jain Pav Bhaji: no onion, garlic, potato. Use raw banana instead. Cheese Pav Bhaji: add processed cheese on top. Mushroom Pav Bhaji: add mushrooms.",
+    },
+    "vada pav": {
+        "title": "🍔 Mumbai Vada Pav",
+        "serves": "8",
+        "time": "30 mins",
+        "difficulty": "Easy",
+        "ingredients": [
+            "**Batata Vada:** 4 boiled potatoes (mashed), 1 tsp mustard seeds, 8-10 curry leaves",
+            "2 green chilies (finely chopped), 1 tsp ginger paste",
+            "1 tsp turmeric, fresh coriander, salt",
+            "**Batter:** 1 cup besan, ½ tsp turmeric, ½ tsp red chili, salt, water (thick batter)",
+            "**Dry Garlic Chutney:** ½ cup dry coconut (desiccated), 8-10 garlic cloves, 2 tsp red chili, salt",
+            "**Green Chutney:** Fresh coriander, green chilies, garlic, lemon",
+            "8 pav (soft dinner rolls), oil for frying",
+        ],
+        "steps": [
+            "**Vada Filling:** Temper mustard seeds in oil. Add curry leaves, ginger, green chili, turmeric. Add mashed potatoes, coriander, salt. Mix well. Cool completely. Shape into balls.",
+            "**Batter:** Mix besan with spices and enough water to make a thick coating batter.",
+            "**Fry:** Dip potato balls in batter, deep fry in hot oil until golden and crispy.",
+            "**Dry Chutney:** Blend dry coconut, garlic, red chili, salt until coarse powder. No water.",
+            "**Assemble:** Slice pav, apply green chutney on one side, dry garlic chutney on other. Place hot vada inside. Serve immediately.",
+        ],
+        "tips": [
+            "The DRY garlic-coconut chutney is what separates authentic vada pav from copies",
+            "Vada filling must be completely cooled before frying or it'll burst",
+            "Ashok Vada Pav (Kirti College, Mumbai) fries in very hot oil for a super crispy shell",
+            "Green chutney: coriander + garlic + green chili + lemon only — no extras",
+            "Eat immediately — vada pav gets soggy within 10 mins",
+        ],
+        "variations": "Schezwan Vada Pav: schezwan chutney instead of green. Cheese Vada Pav: cheese slice inside. Jain version: no garlic, no onion in filling.",
+    },
+    "kheer": {
+        "title": "🍮 Rice Kheer (Payasam)",
+        "serves": "6",
+        "time": "45 mins",
+        "difficulty": "Easy",
+        "ingredients": [
+            "1 litre full-fat milk",
+            "¼ cup basmati rice (or vermicelli for seviyan)",
+            "½ cup sugar (or condensed milk)",
+            "¼ tsp cardamom powder",
+            "A pinch of saffron soaked in 2 tbsp warm milk",
+            "2 tbsp cashews, almonds, pistachios (sliced)",
+            "1 tsp rose water (optional)",
+        ],
+        "steps": [
+            "**Reduce Milk:** Bring milk to boil in a heavy bottom pan. Reduce to medium and simmer, stirring every few minutes until it reduces to ¾ volume (~15 mins).",
+            "**Add Rice:** Add washed rice (or soaked rice for creamier texture). Cook on low-medium, stirring often, for 25-30 mins until rice is fully cooked and milk is thick.",
+            "**Sweeten:** Add sugar, stir until dissolved. Cook 5 more mins.",
+            "**Finish:** Add saffron milk, cardamom, rose water. Stir. Remove from heat.",
+            "Top with dry fruits. Serve warm or chilled.",
+        ],
+        "tips": [
+            "Stir frequently — milk burns easily at the bottom (use a heavy pan)",
+            "Soak rice for 30 mins for faster, creamier cooking",
+            "Condensed milk instead of sugar = richer, faster kheer",
+            "Refrigerate overnight for best flavour — it thickens beautifully",
+            "Kerala Payasam: use jaggery instead of sugar and coconut milk instead of dairy milk",
+        ],
+        "variations": "Vermicelli Kheer (Seviyan): fry vermicelli in ghee first. Sabudana Kheer: sago pearls. Mango Kheer: add mango pulp after removing from heat. Carrot Halwa adjacent: add grated carrot.",
+    },
+    "golgappa": {
+        "title": "🫙 Golgappa / Pani Puri",
+        "serves": "30-35 puris",
+        "time": "45 mins",
+        "difficulty": "Medium",
+        "ingredients": [
+            "**Puri:** 1 cup rava/sooji (fine semolina), ¼ cup maida, salt, water, oil for frying",
+            "**Pani (Spiced Water):** 1 cup fresh mint, ½ cup coriander, 2 green chilies",
+            "2 tbsp tamarind paste, 1 tsp roasted cumin powder",
+            "1 tsp black salt, ½ tsp chaat masala, sugar to taste",
+            "4 cups chilled water",
+            "**Filling:** 2 boiled potatoes (mashed), ½ cup boiled chickpeas",
+            "Black salt, cumin powder, red chili, coriander",
+        ],
+        "steps": [
+            "**Puri Dough:** Mix rava, maida, salt. Add just enough water to make a stiff dough. Knead well. Rest 20 mins covered.",
+            "**Roll & Cut:** Roll dough very thin (1-2mm). Cut into small circles using a small cutter or bottle cap.",
+            "**Fry:** Fry in medium-hot oil. Press with a spoon immediately as they go in — they puff up. Flip and fry until golden. Drain.",
+            "**Pani:** Blend mint, coriander, green chili with little water. Strain. Add tamarind, black salt, cumin, chaat masala, sugar. Mix with 4 cups chilled water. Taste and adjust.",
+            "**Assemble:** Make a small hole in puri, add filling, dip in chilled pani and eat immediately.",
+        ],
+        "tips": [
+            "The puri must be pressed with a spoon as soon as it hits the oil — this is what makes it puff",
+            "Rava-heavy dough = crispier puri that holds its shape in pani",
+            "Pani must be ice cold — warm pani makes soggy puris",
+            "Delhi pani: minty, thin, very chilled. Mumbai pani: slightly sweeter with more tamarind",
+            "Kolkata phuchka: uses spiced mashed potato + mustard oil, no chickpeas",
+        ],
+        "variations": "Dahi puri: fill with yogurt + chutneys instead of pani. Dry puri: fill with sev + chutneys. Ragda pattis: white pea filling.",
+    },
+}
+
+# ── Smart Search Function ────────────────────────────
+def _search_recipe_kb(query: str):
+    """Search the knowledge base and return best match."""
+    q = query.lower()
+    
+    # Direct keyword mapping
+    keyword_map = {
+        "biryani": "biryani",
+        "dum biryani": "biryani",
+        "butter chicken": "butter chicken",
+        "murgh makhani": "butter chicken",
+        "makhani": "butter chicken",
+        "dosa": "dosa",
+        "masala dosa": "dosa",
+        "idli": "idli",
+        "sambar": "idli",
+        "haleem": "haleem",
+        "chole": "chole",
+        "chhole": "chole",
+        "chole bhature": "chole",
+        "dal makhani": "dal makhani",
+        "makhani dal": "dal makhani",
+        "dal bukhara": "dal makhani",
+        "samosa": "samosa",
+        "rasgulla": "rasgulla",
+        "filter coffee": "filter coffee",
+        "coffee": "filter coffee",
+        "kaapi": "filter coffee",
+        "lassi": "lassi",
+        "pav bhaji": "pav bhaji",
+        "vada pav": "vada pav",
+        "wada pav": "vada pav",
+        "batata vada": "vada pav",
+        "kheer": "kheer",
+        "payasam": "kheer",
+        "golgappa": "golgappa",
+        "pani puri": "golgappa",
+        "puchka": "golgappa",
+        "phuchka": "golgappa",
+        "gol gappe": "golgappa",
+    }
+
+    for kw, key in keyword_map.items():
+        if kw in q:
+            return key, RECIPE_KB[key]
+
+    # Ingredient/topic matching
+    topic_responses = {
+        ("spice", "masala", "garam masala"): "spice_guide",
+        ("vegetarian", "veg", "no meat", "paneer"): "veg_tip",
+        ("fry", "deep fry", "oil", "frying"): "fry_tip",
+        ("ferment", "batter", "idli batter", "dosa batter"): "ferment_tip",
+        ("substitute", "replace", "alternative", "without"): "substitute_tip",
+        ("street food", "chaat", "snack"): "street_food",
+        ("sweet", "dessert", "mithai", "halwa"): "dessert_tip",
+    }
+
+    for keywords, topic in topic_responses.items():
+        if any(kw in q for kw in keywords):
+            return topic, None
+
+    return None, None
+
+
+def _get_topic_response(topic: str, query: str) -> str:
+    topic_answers = {
+        "spice_guide": """🌶️ **Essential Indian Spice Guide**
+
+**The 10 Must-Have Spices:**
+1. **Cumin (Jeera)** — earthy, warm base for almost every dish
+2. **Coriander (Dhania)** — citrusy, used as powder or whole seeds  
+3. **Turmeric (Haldi)** — anti-inflammatory, adds colour and earthiness
+4. **Red Chili Powder** — heat level varies by region (Kashmiri = mild+colour, Mathania = hot)
+5. **Garam Masala** — blend of warming spices, added at the end of cooking
+6. **Mustard Seeds (Rai)** — essential for South Indian tadka/tempering
+7. **Fenugreek (Methi)** — slightly bitter; seeds, leaves (kasuri methi) or fresh
+8. **Cardamom (Elaichi)** — green for sweets & biryani; black for gravies
+9. **Asafoetida (Hing)** — strong flavour in tempering; use sparingly
+10. **Bay Leaves (Tej Patta)** — aromatic, used in biryani and kormas
+
+**Garam Masala from Scratch:**
+Dry roast and grind: 2 tbsp coriander, 1 tbsp cumin, 1 tsp black pepper, 5 cardamom, 3 cloves, 1 inch cinnamon, 2 bay leaves, ½ tsp nutmeg, ½ tsp mace.
+
+**Regional Masala Differences:**
+- **Chettinad Masala:** adds kalpasi (stone flower), marathi mokku, kalpasi
+- **Goan Masala:** lots of dried red chilies + coconut vinegar base
+- **Sindhi Masala:** heavy on coriander and dry mango powder
+- **Biryani Masala:** adds star anise, kewra, rose petals""",
+
+        "veg_tip": """🥦 **Vegetarian Indian Cooking — Tips & Substitutions**
+
+**Replacing Meat in Indian Dishes:**
+- **Paneer** (cottage cheese) → Butter Chicken → Paneer Makhani ✅
+- **Jackfruit (Kathal)** → Mutton/Pulled pork dishes → Biryani, Korma ✅
+- **Mushrooms** → Chicken in most gravies → Mushroom Do Pyaza ✅
+- **Soya Chunks** → Keema dishes → Soya Keema Pav, Keema Pao ✅
+- **Raw Banana (Kela)** → Lamb in some coastal dishes ✅
+- **Lotus Stem (Kamal Kakdi)** → Slow-braised curries ✅
+- **Chickpeas/Rajma** → Dense meat gravies ✅
+
+**Classic Pure Veg Indian Dishes (No Substitution Needed):**
+Dal Makhani | Baingan Bharta | Aloo Gobi | Palak Paneer | Malai Kofta | Rajma Chawal | Undhiyu | Saag | Bhindi Masala | Kadhi Pakora
+
+**Protein-Rich Veg Indian Meals:**
+- Dal + Rice = complete protein (ancient food wisdom)
+- Chana (chickpea) curries — high protein
+- Paneer dishes — full protein
+- Sattu (roasted Bengal gram) — Bihar's superfood protein drink""",
+
+        "fry_tip": """🔥 **Indian Deep Frying Secrets**
+
+**Oil Temperature Guide:**
+- **160°C — LOW:** Samosa, kachori (crispy without burning)
+- **170°C — MEDIUM:** Pakoras, bhajiya, vada
+- **180-190°C — HIGH:** Puri, bhature, jalebi
+
+**How to Test Without a Thermometer:**
+- Drop a small bit of dough → sinks then rises slowly = 160°C (samosa temp)
+- Dough rises quickly = 170°C (pakora temp)
+- Dough rises immediately and browns fast = 190°C+ (too hot for most)
+
+**Why Your Fried Food Fails:**
+- **Too oily:** Oil not hot enough when food went in
+- **Burnt outside, raw inside:** Oil too hot
+- **Soggy after frying:** Didn't drain on paper properly; or added too many pieces at once
+- **Didn't puff (puri/bhature):** Dough too soft; or oil not hot enough
+
+**Healthy Frying Tips:**
+- Use fresh oil for better taste
+- Never reuse oil more than 2-3 times
+- Cast iron kadai maintains temperature better than steel""",
+
+        "ferment_tip": """🧫 **The Art of Fermentation in Indian Cooking**
+
+**Idli/Dosa Batter Fermentation:**
+- Ideal temperature: 26–32°C (room temp in India)
+- Cold climates trick: Preheat oven to lowest setting, turn off, put batter inside
+- How to know it's ready: Batter doubles, smells slightly sour, has small bubbles
+- Over-fermented: Very sour, slightly pink — still usable, good for uttapam!
+- Under-fermented: Dense idlis, won't spread for dosa
+
+**Grinder vs. Blender:**
+- Wet grinder (stone) = fluffier urad dal = softer idlis
+- Blender = acceptable but not as airy
+- Trick: Add ice cubes when blending in mixer to keep it cool
+
+**Fermentation Timeline:**
+- Mumbai/Chennai (hot): 6-8 hours
+- Hyderabad: 8-10 hours  
+- Delhi/North (cooler): 12-16 hours
+- Winter: Add a pinch of soda only as emergency backup
+
+**Other Fermented Indian Foods:**
+Kanji (fermented black carrot drink) | Gundruk (Nepali fermented greens) | Ambali (fermented ragi porridge) | Dhokla | Jalebi batter""",
+
+        "substitute_tip": """🔄 **Indian Ingredient Substitutions**
+
+| Original | Substitute | Notes |
+|---------|-----------|-------|
+| Tamarind | Kokum / Amchur / Lemon | Kokum for coastal dishes |
+| Kasuri Methi | Fresh fenugreek leaves | Use 2x quantity |
+| Hing (Asafoetida) | Garlic + leek | Different but similar function |
+| Coconut milk | Cashew cream | Blend cashews with water |
+| Ghee | Butter + drop of oil | Not the same but workable |
+| Yogurt | Coconut yogurt (vegan) | For marinating |
+| Chana Dal | Yellow moong dal | Softer texture |
+| Basmati Rice | Any long-grain rice | Biryani won't be the same |
+| Fresh curry leaves | Dried curry leaves | Use 2x, less fragrant |
+| Jaggery | Dark brown sugar | Same quantity |
+| Kewra water | Rose water | Different fragrance |
+| Fresh grated coconut | Desiccated coconut (soaked) | Soak in warm water 30 mins |""",
+
+        "street_food": """🛒 **Indian Street Food Guide — City by City**
+
+**Mumbai:** Vada Pav → Pav Bhaji → Bhelpuri → Sev Puri → Misal Pav → Bombay Sandwich
+**Delhi:** Chole Bhature → Paranthe → Golgappa → Dahi Bhalla → Aloo Tikki → Ram Laddoo
+**Kolkata:** Kathi Roll → Phuchka → Jhalmuri → Tele Bhaja → Egg Roll → Mughlai Paratha
+**Hyderabad:** Mirchi Bajji → Lukhmi → Dahi Vada → Haleem Slider → Irani Chai
+**Chennai:** Sundal → Murukku → Bajji → Paniyaram → Kaara Paniyaram → Kothu Parotta
+**Lucknow:** Basket Chaat → Tikki Chaat → Dahi Vada → Makkhan Malai → Ram Laddoo
+**Amritsar:** Amritsari Kulcha → Amritsari Fish → Pinni → Gajjar Halwa
+**Jaipur:** Pyaaz Kachori → Mawa Kachori → Mirchi Bada → Ghewar → Dal Baati
+
+**Chaat Essentials:**
+Every chaat needs: Tamarind chutney (imli) + Green chutney (pudina) + Sev + Chaat masala
+Master these two chutneys and you can make any chaat at home!""",
+
+        "dessert_tip": """🍬 **Indian Sweets & Desserts Guide**
+
+**By Region:**
+- **North India:** Gulab Jamun, Jalebi, Barfi, Halwa, Shahi Tukda, Kheer
+- **Bengal:** Rasgulla, Sandesh, Mishti Doi, Rajbhog, Pantua
+- **Maharashtra:** Puran Poli, Modak, Shrikhand, Basundi, Kheer (Doodhi)
+- **Tamil Nadu:** Adhirasam, Mysurpa, Thirattipaal, Paal Payasam
+- **Kerala:** Palada Payasam, Ada Pradaman (with jaggery+coconut milk), Unniyappam
+- **Gujarat:** Shrikhand, Mohanthal, Lapsi (broken wheat halwa)
+- **Hyderabad:** Double Ka Meetha, Qubani Ka Meetha, Shahi Tukda
+
+**Common Mistakes in Indian Sweets:**
+- Gulab Jamun too hard: Overworked dough or too much maida
+- Kheer too thin: Didn't reduce milk enough; cook longer
+- Rasgulla rubbery: Under-kneaded chenna
+- Halwa grainy: Sugar added before ghee was properly absorbed
+- Jalebi flat: Batter fermentation incomplete; needs slight sourness
+
+**3 Easiest Indian Sweets to Make:**
+1. **Rava Ladoo** (5 ingredients, 15 mins)
+2. **Coconut Barfi** (3 ingredients, 20 mins)
+3. **Kheer** (4 ingredients, 45 mins patience)""",
+    }
+    return topic_answers.get(topic, "")
+
+
+def _format_recipe_response(recipe: dict) -> str:
+    """Format a recipe dict into a clean chat response."""
+    lines = [
+        f"## {recipe['title']}",
+        f"**Serves:** {recipe['serves']} &nbsp;|&nbsp; **Time:** {recipe['time']} &nbsp;|&nbsp; **Difficulty:** {recipe['difficulty']}",
+        "",
+        "### 🛒 Ingredients",
+    ]
+    for ing in recipe["ingredients"]:
+        lines.append(f"- {ing}")
+
+    lines += ["", "### 👨‍🍳 Method"]
+    for i, step in enumerate(recipe["steps"], 1):
+        lines.append(f"**Step {i}:** {step}")
+        lines.append("")
+
+    lines += ["### 💡 Pro Tips"]
+    for tip in recipe["tips"]:
+        lines.append(f"✅ {tip}")
+
+    lines += ["", f"### 🔄 Variations", recipe["variations"]]
+    return "\n".join(lines)
+
+
+def _generate_chat_response(user_msg: str, history: list) -> str:
+    """Generate a response using the built-in knowledge base."""
+    q = user_msg.lower().strip()
+
+    # Greeting
+    if any(w in q for w in ["hi", "hello", "hey", "namaste", "hola"]):
+        return """🙏 **Namaste! Welcome to your Indian Food Expert!**
+
+I'm your personal Indian cuisine assistant with deep knowledge of recipes, techniques, and food culture from all across India!
+
+**Ask me about:**
+- 🍚 Recipes with full ingredients & step-by-step method
+- 🌶️ Spice guides & masala blends
+- 🔄 Ingredient substitutions
+- 🏙️ City-wise street food guides
+- 🥦 Vegetarian alternatives
+- 🍬 Indian sweets & desserts
+- 🔥 Frying & fermentation tips
+
+**I know recipes for:** Biryani · Butter Chicken · Dosa · Idli · Haleem · Chole · Dal Makhani · Samosa · Rasgulla · Filter Coffee · Lassi · Pav Bhaji · Vada Pav · Kheer · Golgappa · and many more!
+
+What would you like to cook today? 😊"""
+
+    # Help / What can you do
+    if any(w in q for w in ["what can you", "help", "what do you know", "topics", "list"]):
+        return """📚 **Here's what I can help you with:**
+
+**🍽️ Full Recipes (with tips & variations):**
+Biryani | Butter Chicken | Dosa | Idli & Sambar | Haleem | Chole Bhature | Dal Makhani | Samosa | Rasgulla | Filter Coffee | Lassi | Pav Bhaji | Vada Pav | Kheer | Golgappa/Pani Puri
+
+**📖 Knowledge Topics:**
+- 🌶️ Indian spice guide & garam masala recipe
+- 🥦 Vegetarian substitutions for any dish
+- 🔥 Deep frying temperatures & secrets
+- 🧫 Fermentation guide (idli, dosa, dhokla)
+- 🔄 Ingredient substitutions
+- 🛒 Street food guide — city by city
+- 🍬 Indian sweets & desserts guide
+
+**Just type what you want to know!** Examples:
+- *"How to make biryani?"*
+- *"Vegetarian butter chicken"*
+- *"Indian spice guide"*
+- *"Street food of Mumbai"*"""
+
+    # Check knowledge base for recipes
+    key, recipe = _search_recipe_kb(q)
+
+    if recipe:
+        return _format_recipe_response(recipe)
+
+    if key:  # topic response
+        return _get_topic_response(key, q)
+
+    # Thank you
+    if any(w in q for w in ["thank", "thanks", "shukriya", "dhanyawad"]):
+        return "🙏 You're most welcome! Happy cooking! Do ask if you need any more recipes or tips. **Khana khao, mast raho!** 😄🍛"
+
+    # Goodbye
+    if any(w in q for w in ["bye", "goodbye", "alvida"]):
+        return "👋 **Alvida!** Come back anytime for more Indian food wisdom. Happy cooking! 🍛✨"
+
+    # Unknown — helpful fallback
+    nearby = []
+    all_dishes = list(RECIPE_KB.keys())
+    for dish in all_dishes:
+        if any(word in dish for word in q.split() if len(word) > 3):
+            nearby.append(dish.title())
+
+    fallback = f"""🤔 I don't have a specific answer for **"{user_msg}"**, but I can help with:
+
+**Available Recipes:**
+{" · ".join([k.title() for k in RECIPE_KB.keys()])}
+
+**Knowledge Topics:**
+Spice Guide · Vegetarian Tips · Frying Secrets · Fermentation Guide · Ingredient Substitutions · Street Food by City · Desserts Guide
+
+Try asking like:
+- *"How to make [dish name]?"*
+- *"Recipe for dosa"*
+- *"Indian spice guide"*
+- *"Street food of Kolkata"*"""
+
+    return fallback
+
+
+with tab6:
     st.markdown("""
     <div class="sec-head" style="margin-top:4px">
       <div class="sec-head-text">🤖 AI Recipe & Food Knowledge Assistant</div>
       <div class="sec-head-line"></div>
     </div>""", unsafe_allow_html=True)
 
-    # Chat header card
-    st.markdown(f"""
-    <div style="background:var(--ink);border-radius:16px;padding:20px 28px;margin-bottom:20px">
-      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--spice-lt);font-weight:700;margin-bottom:8px">Powered by Claude AI</div>
-      <div style="font-family:'Playfair Display',serif;font-size:22px;color:#F5EFE6;margin-bottom:8px">
-        Your Personal <em style="color:var(--gold-lt)">Indian Food Expert</em>
+    # Header card
+    st.markdown("""
+    <div style="background:var(--ink);border-radius:16px;padding:20px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--spice-lt);font-weight:700;margin-bottom:8px">Built-in Knowledge · No API Key Needed</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;color:#F5EFE6;margin-bottom:8px">
+          Your Personal <em style="color:var(--gold-lt)">Indian Food Expert</em>
+        </div>
+        <div style="font-size:12px;color:rgba(245,239,230,0.5);line-height:1.8">
+          Full recipes · Spice guides · Substitutions · Street food by city · Dessert tips — works 100% offline!
+        </div>
       </div>
-      <div style="font-size:12px;color:rgba(245,239,230,0.5);line-height:1.8">
-        Ask me anything about Indian cuisine — recipes, cooking techniques, ingredient substitutions,
-        regional variations, nutritional info, pairing suggestions, or restaurant recommendations.
-      </div>
+      <div style="font-size:48px;opacity:0.6">👨‍🍳</div>
     </div>""", unsafe_allow_html=True)
 
-    # Suggested prompts
-    col_s1, col_s2, col_s3, col_s4 = st.columns(4)
+    # Quick suggestion buttons
+    st.markdown("<div style='font-size:11px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7A6F65;margin-bottom:8px'>⚡ Quick Ask</div>", unsafe_allow_html=True)
+    sug_cols = st.columns(4)
     suggestions = [
-        "🍚 How to make Hyderabadi Biryani?",
-        "🌶️ What is the secret to Chettinad masala?",
-        "🥘 Vegetarian version of Butter Chicken?",
-        "☕ How to brew perfect South Indian filter coffee?",
+        ("🍚", "Biryani recipe?"),
+        ("🍗", "Butter Chicken recipe?"),
+        ("🫔", "How to make Dosa?"),
+        ("🌶️", "Indian spice guide"),
+        ("🥦", "Vegetarian tips"),
+        ("🛒", "Mumbai street food"),
+        ("🍬", "Indian desserts guide"),
+        ("☕", "Filter coffee recipe?"),
     ]
-    for col, sug in zip([col_s1, col_s2, col_s3, col_s4], suggestions):
+    row1 = st.columns(4)
+    row2 = st.columns(4)
+    for col, (emoji, label) in zip(row1 + row2, suggestions):
         with col:
-            if st.button(sug, key=f"sug_{sug[:15]}", use_container_width=True):
-                st.session_state.chat_history.append({"role": "user", "content": sug})
+            if st.button(f"{emoji} {label}", key=f"sug_{label[:12]}", use_container_width=True):
+                st.session_state.chat_history.append({"role": "user", "content": label})
+                reply = _generate_chat_response(label, st.session_state.chat_history)
+                st.session_state.chat_history.append({"role": "assistant", "content": reply})
+                st.rerun()
 
-    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-
-    # Display chat messages
-    chat_container = st.container()
-    with chat_container:
-        for msg in st.session_state.chat_history:
-            if msg["role"] == "user":
-                st.markdown(f"""
-                <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
-                  <div style="max-width:75%;background:linear-gradient(135deg,var(--spice) 0%,#E8572A 100%);
-                              border-radius:18px 18px 4px 18px;padding:12px 18px;color:white;
-                              font-size:14px;line-height:1.6;box-shadow:0 4px 16px rgba(196,65,26,0.25)">
-                    {msg['content']}
-                  </div>
-                </div>""", unsafe_allow_html=True)
-            else:
-                st.markdown(f"""
-                <div style="display:flex;justify-content:flex-start;margin-bottom:12px;gap:12px">
-                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0D0A08,#2A1F18);
-                              border:2px solid rgba(196,65,26,0.4);display:flex;align-items:center;justify-content:center;
-                              font-size:16px;flex-shrink:0">🤖</div>
-                  <div style="max-width:80%;background:#FFFCF8;border:1px solid rgba(196,65,26,0.15);
-                              border-radius:4px 18px 18px 18px;padding:14px 18px;
-                              font-size:14px;line-height:1.8;color:#3C3530;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
-                    {msg['content'].replace(chr(10), '<br>')}
-                  </div>
-                </div>""", unsafe_allow_html=True)
-
-    # Check if we need to generate a response (last message is from user)
-    if st.session_state.chat_history and st.session_state.chat_history[-1]["role"] == "user":
-        _api_key = os.getenv("ANTHROPIC_API_KEY")
-        if _api_key:
-            _client = _Anthropic(api_key=_api_key)
-            _system_prompt = """You are an expert Indian food and recipe assistant with deep knowledge of:
-- All regional Indian cuisines: North Indian, South Indian, East Indian, West Indian, and tribal foods
-- Authentic recipes with exact measurements, techniques, and step-by-step instructions
-- The history and cultural context of Indian dishes
-- Ingredient substitutions for hard-to-find items
-- Street food, home cooking, restaurant cooking, and festive foods
-- Health and nutrition aspects of Indian ingredients
-- Pairing suggestions (drinks, sides, chutneys)
-- Cooking equipment (tawa, kadai, pressure cooker, tandoor techniques)
-- Spice blends (masalas) and how to make them from scratch
-- Regional variations of the same dish (e.g., how biryani differs across India)
-- Famous restaurants and their signature dishes across Indian cities
-- Modern fusion twists on traditional recipes
-- Seasonal and festival-specific dishes
-
-Always be enthusiastic, specific, and helpful. When giving recipes, include:
-1. Ingredients with quantities
-2. Step-by-step method
-3. Tips for getting it right
-4. Common mistakes to avoid
-5. Variations or regional twists
-
-Format responses clearly with headers and bullet points where helpful. Keep responses warm, conversational and packed with authentic knowledge."""
-
-            with st.spinner("🤖 Chef AI is thinking..."):
-                try:
-                    _messages = [{"role": m["role"], "content": m["content"]} for m in st.session_state.chat_history]
-                    _response = _client.messages.create(
-                        model="claude-haiku-4-5-20251001",
-                        max_tokens=1500,
-                        system=_system_prompt,
-                        messages=_messages,
-                    )
-                    _reply = _response.content[0].text
-                    st.session_state.chat_history.append({"role": "assistant", "content": _reply})
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"❌ AI Error: {str(e)}")
-        else:
-            st.warning("⚠️ ANTHROPIC_API_KEY not set in .env file. Please add your API key to enable the chatbot.")
-
-    # Chat input
     st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+    # Display chat history
+    for msg in st.session_state.chat_history:
+        if msg["role"] == "user":
+            st.markdown(f"""
+            <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+              <div style="max-width:75%;background:linear-gradient(135deg,#C4411A 0%,#E8572A 100%);
+                          border-radius:18px 18px 4px 18px;padding:12px 18px;color:white;
+                          font-size:14px;line-height:1.6;box-shadow:0 4px 16px rgba(196,65,26,0.25)">
+                {msg['content']}
+              </div>
+            </div>""", unsafe_allow_html=True)
+        else:
+            # Render markdown in response
+            st.markdown(f"""
+            <div style="display:flex;justify-content:flex-start;margin-bottom:12px;gap:12px">
+              <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0D0A08,#2A1F18);
+                          border:2px solid rgba(196,65,26,0.4);display:flex;align-items:center;justify-content:center;
+                          font-size:18px;flex-shrink:0;margin-top:4px">👨‍🍳</div>
+              <div style="max-width:85%;background:#FFFCF8;border:1px solid rgba(196,65,26,0.15);
+                          border-radius:4px 18px 18px 18px;padding:16px 20px;
+                          font-size:13px;line-height:1.8;color:#3C3530;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+            """, unsafe_allow_html=True)
+            st.markdown(msg["content"])
+            st.markdown("</div></div>", unsafe_allow_html=True)
+
+    # Input area
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     col_inp, col_send = st.columns([5, 1])
     with col_inp:
         user_input = st.text_input(
-            "Ask about any Indian food, recipe, or cooking technique...",
-            key="chat_input",
+            "Ask anything...",
+            key="chat_input_v2",
             label_visibility="collapsed",
-            placeholder="e.g. How do I make fluffy idlis? What spices go in biryani masala?",
+            placeholder="e.g. How do I make fluffy idlis? What spices go in biryani? Mumbai street food?",
         )
     with col_send:
-        send_btn = st.button("Send 🚀", type="primary", use_container_width=True)
+        send_btn = st.button("Send 🚀", type="primary", use_container_width=True, key="send_chat")
 
     if send_btn and user_input.strip():
-        st.session_state.chat_history.append({"role": "user", "content": user_input.strip()})
+        user_msg = user_input.strip()
+        st.session_state.chat_history.append({"role": "user", "content": user_msg})
+        reply = _generate_chat_response(user_msg, st.session_state.chat_history)
+        st.session_state.chat_history.append({"role": "assistant", "content": reply})
         st.rerun()
 
-    # Clear chat button
+    # Clear
     if st.session_state.chat_history:
-        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-        if st.button("🗑️ Clear Chat History", type="secondary"):
+        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+        if st.button("🗑️ Clear Chat", type="secondary", key="clear_chat_v2"):
             st.session_state.chat_history = []
             st.rerun()
 
-    # Footer note
+    # Footer
     st.markdown("""
     <div class="status-info" style="margin-top:16px">
-        🤖 &nbsp; Powered by <strong>Claude AI (Haiku)</strong> — Ask about any Indian dish, recipe, ingredient, or cooking technique.
-        Responses are based on AI knowledge and may vary from local restaurant preparations.
+        👨‍🍳 &nbsp; <strong>15+ full recipes</strong> · Spice guides · Substitutions · Street food · Desserts ·
+        <strong>Zero API key needed</strong> — all knowledge is built right in!
     </div>""", unsafe_allow_html=True)
