@@ -170,7 +170,7 @@ with st.sidebar:
     scan_btn = st.button("📡 Scan Trends", use_container_width=True, type="secondary")
     gen_btn  = st.button("🤖 Generate Specials", use_container_width=True, type="primary")
     st.markdown("---")
-    st.caption("**Stack:** Python · BeautifulSoup · AI · Streamlit")
+    st.caption("**Stack:** Python · BeautifulSoup · Claude AI · Streamlit")
     st.caption("**Sources:** Google · Zomato · Times Food · Instagram")
 
 
@@ -187,7 +187,7 @@ st.markdown("""
   <div style="font-size:40px">🍛</div>
   <div>
     <div class="hero-title">भारत <span>FoodTrend</span> Agent</div>
-    <div class="hero-sub">Python · Web Scraping · AI · Every Indian State</div>
+    <div class="hero-sub">Python · Web Scraping · Claude AI · Every Indian State</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -208,7 +208,7 @@ if gen_btn:
         st.warning("⚠️ Please scan trends first!")
     else:
         from llm.dish_generator import run_full_pipeline
-        with st.spinner("🤖 AI is analyzing trends and crafting specials..."):
+        with st.spinner("🤖 Claude AI is analyzing trends and crafting specials..."):
             output = run_full_pipeline(
                 scraped_data    = st.session_state.scraped,
                 restaurant_type = rtype,
