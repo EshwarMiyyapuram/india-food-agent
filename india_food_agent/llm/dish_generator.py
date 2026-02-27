@@ -296,57 +296,6 @@ Write like a paid consultant — confident, data-backed, actionable."""
 
 
 # ══════════════════════════════════════════
-#  STEP 4 — Top 10 Best Dishes in a City
-# ══════════════════════════════════════════
-def generate_top_dishes(city: str) -> dict:
-    """
-    Uses Claude to generate the top 10 iconic must-eat dishes for a given Indian city.
-    Returns structured data with restaurant recommendations, pricing, and must-try reasons.
-    """
-    prompt = f"""You are India's foremost food critic and travel food guide expert.
-
-List the TOP 10 BEST and most iconic dishes to eat in {city}, India.
-These should be real, famous dishes that locals and tourists absolutely must try.
-Include authentic street food, restaurant classics, and hidden gems.
-
-For each dish provide:
-- The REAL best restaurant/stall in {city} where it's served
-- What makes this specific version in {city} unique
-- Why it's a must-eat (compelling, mouth-watering reason)
-- Realistic price range in Indian Rupees ₹
-- Best time to eat it
-
-Return ONLY valid JSON (no markdown):
-{{
-  "city": "{city}",
-  "top_dishes": [
-    {{
-      "rank": 1,
-      "dish_name": "exact dish name",
-      "restaurant": "Best place to eat this in {city} (real name)",
-      "why_famous": "2-sentence description of why this dish is legendary in {city}",
-      "unique_factor": "What makes the {city} version special vs elsewhere",
-      "price_range": "₹XXX–₹YYY",
-      "best_time": "breakfast|lunch|dinner|anytime",
-      "must_try_reason": "One irresistible sentence that makes you want to eat it NOW",
-      "tags": ["tag1", "tag2", "tag3"]
-    }}
-  ],
-  "city_food_culture": "2 sentence summary of {city}'s unique food identity and what makes it special"
-}}"""
-
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=3500,
-        messages=[{"role": "user", "content": prompt}]
-    )
-
-    raw = response.content[0].text
-    raw = re.sub(r"```json|```", "", raw).strip()
-    return json.loads(raw)
-
-
-# ══════════════════════════════════════════
 #  CONVENIENCE — run full pipeline
 # ══════════════════════════════════════════
 def run_full_pipeline(
