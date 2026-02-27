@@ -306,10 +306,11 @@ div[data-testid="stExpander"] summary { font-size: 12px !important; font-weight:
 # ══════════════════════════════════════════
 #  SESSION STATE
 # ══════════════════════════════════════════
-if "scraped"    not in st.session_state: st.session_state.scraped    = None
-if "analysis"   not in st.session_state: st.session_state.analysis   = None
-if "specials"   not in st.session_state: st.session_state.specials   = None
-if "report_txt" not in st.session_state: st.session_state.report_txt = None
+if "scraped"       not in st.session_state: st.session_state.scraped       = None
+if "analysis"      not in st.session_state: st.session_state.analysis      = None
+if "specials"      not in st.session_state: st.session_state.specials       = None
+if "report_txt"    not in st.session_state: st.session_state.report_txt     = None
+if "chat_history"  not in st.session_state: st.session_state.chat_history   = []
 
 
 # ══════════════════════════════════════════
@@ -506,7 +507,7 @@ if gen_btn:
 # ══════════════════════════════════════════
 #  TABS
 # ══════════════════════════════════════════
-tab1, tab2, tab3, tab4 = st.tabs(["📊  Trend Analysis", "🍽  Weekend Specials", "📋  Weekly Report", "🗺️  Restaurant Map"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📊  Trend Analysis", "🍽  Weekend Specials", "📋  Weekly Report", "🗺️  Restaurant Map", "🏙️  City Top 10", "🤖  Recipe AI Chat"])
 
 
 # ════════════════════════════════════════════════════
@@ -819,6 +820,252 @@ with tab3:
 #  TAB 4 — RESTAURANT MAP
 # ════════════════════════════════════════════════════
 
+# ══════════════════════════════════════════
+#  TOP 10 FOODS PER CITY (Static Curated Data)
+# ══════════════════════════════════════════
+CITY_TOP_10_FOODS = {
+    "Hyderabad": [
+        {"rank":1,"dish":"Hyderabadi Dum Biryani","emoji":"🍚","where":"Paradise, Shah Ghouse","price":"₹180–₹450","must_try":True,"description":"Aromatic slow-cooked rice with tender mutton or chicken sealed in a handi with saffron and fried onions."},
+        {"rank":2,"dish":"Haleem","emoji":"🥘","where":"Shah Ghouse, Pista House","price":"₹120–₹250","must_try":True,"description":"Rich slow-cooked wheat and mutton stew — a Ramadan staple now loved year-round."},
+        {"rank":3,"dish":"Irani Chai & Osmania Biscuits","emoji":"☕","where":"Nimrah Café, Charminar","price":"₹20–₹40","must_try":True,"description":"Creamy, cardamom-laced tea with crunchy buttery Osmania biscuits — a Hyderabadi morning ritual."},
+        {"rank":4,"dish":"Pathar Gosht","emoji":"🥩","where":"Bawarchi Restaurant","price":"₹300–₹500","must_try":False,"description":"Spiced mutton marinated and cooked on a hot granite stone over charcoal."},
+        {"rank":5,"dish":"Double Ka Meetha","emoji":"🍮","where":"Hotel Shadab, home kitchens","price":"₹80–₹150","must_try":False,"description":"Hyderabadi bread pudding soaked in sugar syrup, fried and topped with khoya and dry fruits."},
+        {"rank":6,"dish":"Mirchi Ka Salan","emoji":"🌶️","where":"Most biryani joints","price":"₹60–₹120","must_try":False,"description":"Long green chilies cooked in a tangy peanut-sesame-tamarind gravy — the classic biryani side."},
+        {"rank":7,"dish":"Qubani Ka Meetha","emoji":"🍑","where":"Shadab, Nayaab","price":"₹80–₹160","must_try":False,"description":"Slow-cooked dried apricot dessert served warm with a dollop of cream."},
+        {"rank":8,"dish":"Lukhmi","emoji":"🥟","where":"Old City bakeries","price":"₹20–₹40","must_try":False,"description":"Crispy square-shaped pastry filled with spiced minced meat — Hyderabad's samosa cousin."},
+        {"rank":9,"dish":"Gongura Mutton","emoji":"🌿","where":"Local Andhra restaurants","price":"₹250–₹400","must_try":False,"description":"Tangy sorrel-leaf based mutton curry unique to Telangana/Andhra."},
+        {"rank":10,"dish":"Dil Khush","emoji":"🧁","where":"Hyderabad bakeries","price":"₹30–₹60","must_try":False,"description":"Flaky pastry with a sweet coconut and tutti-frutti filling — an old-school Hyderabadi bakery treat."},
+    ],
+    "Chennai": [
+        {"rank":1,"dish":"Chettinad Chicken Curry","emoji":"🍗","where":"Hotel Palmgrove, Junior Kuppanna","price":"₹200–₹380","must_try":True,"description":"Fiery, aromatic curry from the Chettinad region with kalpasi and marathi mokku spices."},
+        {"rank":2,"dish":"Idli Sambar","emoji":"🫓","where":"Murugan Idli Shop, Saravana Bhavan","price":"₹60–₹120","must_try":True,"description":"Fluffy steamed rice cakes dunked in a tangy vegetable lentil soup — Chennai's soul food."},
+        {"rank":3,"dish":"Masala Dosa","emoji":"🫔","where":"Saravana Bhavan, Ratna Café","price":"₹70–₹150","must_try":True,"description":"Crispy fermented crepe filled with spiced potato masala, served with coconut chutney."},
+        {"rank":4,"dish":"Filter Coffee","emoji":"☕","where":"Every Brahmin café, Ratna Café","price":"₹20–₹50","must_try":True,"description":"Strong chicory-blended decoction frothed to perfection in a steel tumbler-davara set."},
+        {"rank":5,"dish":"Kothu Parotta","emoji":"🥙","where":"Street stalls across Chennai","price":"₹80–₹150","must_try":False,"description":"Shredded parotta stir-fried with egg, vegetables and spicy masala on a hot tawa."},
+        {"rank":6,"dish":"Biryani (Chennai style)","emoji":"🍚","where":"Junior Kuppanna, Buhari","price":"₹150–₹300","must_try":False,"description":"Short-grain rice biryani with a distinct seeraga samba rice and Chettinad spice profile."},
+        {"rank":7,"dish":"Paya Soup","emoji":"🍲","where":"Muslim quarters, Sowcarpet","price":"₹100–₹180","must_try":False,"description":"Rich collagen-heavy goat trotter soup slow-cooked overnight — a breakfast tradition."},
+        {"rank":8,"dish":"Appam & Stew","emoji":"🥞","where":"Kerala restaurants, Kochi hotels","price":"₹120–₹200","must_try":False,"description":"Lacy rice hoppers paired with a mild coconut milk vegetable or chicken stew."},
+        {"rank":9,"dish":"Sundal","emoji":"🫘","where":"Marina Beach vendors","price":"₹20–₹40","must_try":False,"description":"Boiled chickpeas or legumes tossed with mustard, curry leaves, and fresh coconut — beach snack."},
+        {"rank":10,"dish":"Murukku","emoji":"🌀","where":"Sweet shops, Chettiar stores","price":"₹20–₹60","must_try":False,"description":"Deep-fried crunchy rice flour spirals with sesame and cumin — an addictive Tamil snack."},
+    ],
+    "Mumbai": [
+        {"rank":1,"dish":"Vada Pav","emoji":"🍔","where":"Ashok Vada Pav, every street corner","price":"₹15–₹30","must_try":True,"description":"Spiced potato fritter in a soft pav with green chutney and dry garlic chutney — Mumbai's soul."},
+        {"rank":2,"dish":"Pav Bhaji","emoji":"🫕","where":"Sardar, Cannon Pav Bhaji","price":"₹80–₹150","must_try":True,"description":"Buttery mixed vegetable mash served with toasted pav — a Mumbai street food icon."},
+        {"rank":3,"dish":"Bombay Sandwich","emoji":"🥪","where":"Chowpatty vendors, dabawalas","price":"₹40–₹80","must_try":True,"description":"Layered grilled sandwich with cucumber, beets, green chutney and masala spices."},
+        {"rank":4,"dish":"Bhelpuri","emoji":"🥗","where":"Chowpatty Beach, Marine Drive","price":"₹30–₹60","must_try":True,"description":"Puffed rice tossed with tamarind, chutneys, onion, sev and coriander — sea-breeze eating."},
+        {"rank":5,"dish":"Misal Pav","emoji":"🫙","where":"Mamledar Misal, Warna Misal","price":"₹80–₹150","must_try":False,"description":"Sprouted moth beans in spicy rassa curry topped with farsan, onion, and served with pav."},
+        {"rank":6,"dish":"Keema Pav","emoji":"🥩","where":"Bademiya, street stalls","price":"₹120–₹200","must_try":False,"description":"Spiced minced mutton served with butter-toasted pav — a late-night Mumbai staple."},
+        {"rank":7,"dish":"Bombay Duck Fry","emoji":"🐟","where":"Konkan restaurants, Mahesh Lunch Home","price":"₹180–₹300","must_try":False,"description":"Crispy fried Bombil fish marinated in vinegar and Goan-spiced breadcrumbs."},
+        {"rank":8,"dish":"Puran Poli","emoji":"🫓","where":"Aaswad, traditional homes","price":"₹60–₹100","must_try":False,"description":"Flatbread stuffed with sweetened lentil and jaggery filling — Maharashtra's festive bread."},
+        {"rank":9,"dish":"Modak","emoji":"🍡","where":"Sweet shops across the city","price":"₹20–₹50 each","must_try":False,"description":"Steamed sweet dumplings filled with coconut and jaggery — Lord Ganesha's favourite."},
+        {"rank":10,"dish":"Berry Pulao","emoji":"🍚","where":"Britannia & Co., Café Military","price":"₹350–₹500","must_try":False,"description":"Parsi-style rice pulao studded with imported barberries — a rare Mumbai heirloom dish."},
+    ],
+    "Delhi": [
+        {"rank":1,"dish":"Butter Chicken","emoji":"🍗","where":"Moti Mahal (original), Gulati","price":"₹300–₹600","must_try":True,"description":"The dish that conquered the world — tender tandoori chicken in a silky tomato-butter-cream gravy."},
+        {"rank":2,"dish":"Chole Bhature","emoji":"🫓","where":"Sita Ram Diwan Chand, Haldiram's","price":"₹80–₹150","must_try":True,"description":"Fluffy deep-fried bread with spiced white chickpea curry — Delhi's iconic Sunday breakfast."},
+        {"rank":3,"dish":"Paranthe","emoji":"🥞","where":"Paranthe Wali Gali, Chandni Chowk","price":"₹60–₹120","must_try":True,"description":"Stuffed whole-wheat flatbreads fried in ghee — from aloo to dry fruit, 20+ fillings available."},
+        {"rank":4,"dish":"Galouti Kebab","emoji":"🫔","where":"Karim's, Dum Pukht","price":"₹300–₹500","must_try":True,"description":"Melt-in-the-mouth minced mutton kebab with 100+ spices, perfected for toothless nawabs."},
+        {"rank":5,"dish":"Nihari","emoji":"🍲","where":"Karim's, Al Jawahar","price":"₹200–₹400","must_try":False,"description":"Slow-cooked overnight bone-marrow mutton stew — Old Delhi's revered breakfast dish."},
+        {"rank":6,"dish":"Dal Makhani","emoji":"🫕","where":"Bukhara, Punjab Grill","price":"₹250–₹500","must_try":False,"description":"Black lentils simmered for 24 hours with butter and cream — the Punjabi gold standard."},
+        {"rank":7,"dish":"Daulat Ki Chaat","emoji":"🍮","where":"Chandni Chowk (winter only)","price":"₹30–₹60","must_try":False,"description":"Ethereal morning dew foam sweetened with sugar and saffron — a Delhi winter secret."},
+        {"rank":8,"dish":"Rajma Chawal","emoji":"🍱","where":"Home kitchens, dhabas everywhere","price":"₹80–₹150","must_try":False,"description":"Slow-cooked red kidney beans in onion-tomato masala served over steamed basmati rice."},
+        {"rank":9,"dish":"Jalebi","emoji":"🍥","where":"Old Famous Jalebi Wala, Chandni Chowk","price":"₹30–₹60","must_try":False,"description":"Crispy, syrup-soaked pretzel-shaped sweets — best eaten fresh and scalding hot."},
+        {"rank":10,"dish":"Matar Kulcha","emoji":"🫛","where":"Street vendors near Jama Masjid","price":"₹40–₹80","must_try":False,"description":"Tangy dried peas curry topped with tamarind and chaat masala, eaten with soft kulcha."},
+    ],
+    "Bengaluru": [
+        {"rank":1,"dish":"Benne Masala Dosa","emoji":"🫔","where":"CTR (Shivajinagar), Vidyarthi Bhavan","price":"₹60–₹120","must_try":True,"description":"Crispy dosa loaded with white butter and a spiced potato filling — Bangalore's breakfast crown."},
+        {"rank":2,"dish":"Rava Idli","emoji":"🫓","where":"MTR (Mavalli Tiffin Room)","price":"₹80–₹150","must_try":True,"description":"Semolina idli invented during WWII rice shortage — now MTR's most celebrated dish."},
+        {"rank":3,"dish":"Mangalorean Fish Curry","emoji":"🐟","where":"Coastal Karnataka restaurants","price":"₹200–₹380","must_try":False,"description":"Tangy coconut-based fish curry with byadagi chilies and kokum — coastal Karnataka at its best."},
+        {"rank":4,"dish":"Ragi Mudde","emoji":"🫙","where":"Traditional Karnataka restaurants","price":"₹60–₹100","must_try":False,"description":"Finger millet balls eaten with saaru or sambar — the traditional Kannadiga staple."},
+        {"rank":5,"dish":"Neer Dosa","emoji":"🫓","where":"Udupi restaurants across the city","price":"₹60–₹100","must_try":False,"description":"Lacy, paper-thin rice crepes served with coconut chutney — delicate and light."},
+        {"rank":6,"dish":"Akki Roti","emoji":"🫔","where":"Home kitchens, traditional eateries","price":"₹40–₹80","must_try":False,"description":"Rice flour flatbread mixed with onion, curry leaves and green chili — eaten with chutney."},
+        {"rank":7,"dish":"Mysore Masala Dosa","emoji":"🌶️","where":"Most Darshinis (fast-food joints)","price":"₹60–₹100","must_try":False,"description":"Dosa smeared with red chili-garlic chutney inside before adding potato filling — a spicy twist."},
+        {"rank":8,"dish":"Crab Ghee Roast","emoji":"🦀","where":"Besharam, Coastal restaurants","price":"₹500–₹900","must_try":False,"description":"Mangalorean crab tossed in a dry, aromatic ghee roast masala with byadagi chilies."},
+        {"rank":9,"dish":"Obbattu / Holige","emoji":"🍮","where":"Traditional sweet shops","price":"₹20–₹40","must_try":False,"description":"Karnataka's festive flatbread stuffed with jaggery-lentil or coconut-jaggery filling."},
+        {"rank":10,"dish":"Filter Coffee (Degree Coffee)","emoji":"☕","where":"Every Darshini and Brahmin café","price":"₹15–₹30","must_try":True,"description":"The legendary South Indian filter decoction — dark, chicory-strong and served in steel tumbler."},
+    ],
+    "Kolkata": [
+        {"rank":1,"dish":"Kolkata Biryani","emoji":"🍚","where":"Arsalan, Shiraz, Royal Indian Hotel","price":"₹180–₹350","must_try":True,"description":"Subtle Awadhi-origin biryani with boiled egg and potato added — uniquely Kolkata."},
+        {"rank":2,"dish":"Kathi Roll","emoji":"🌯","where":"Nizam's (original), Campari","price":"₹80–₹160","must_try":True,"description":"Paratha wrap filled with egg, spiced chicken or mutton tikka — Kolkata's original fast food."},
+        {"rank":3,"dish":"Mishti Doi","emoji":"🍮","where":"Sen Mahasay, Hindusthan Sweets","price":"₹40–₹80","must_try":True,"description":"Thick sweetened yogurt set in earthen pots — caramel-hued and velvety smooth."},
+        {"rank":4,"dish":"Rasgulla","emoji":"🍡","where":"K.C. Das (inventors), Nalin Chandra Das","price":"₹15–₹30 each","must_try":True,"description":"Spongy cottage cheese balls soaked in light sugar syrup — Bengal's most iconic sweet."},
+        {"rank":5,"dish":"Kosha Mangsho","emoji":"🥩","where":"Kasturi, Bhojohori Manna","price":"₹250–₹450","must_try":False,"description":"Dark, deeply spiced slow-cooked mutton curry — the pride of every Bengali kitchen."},
+        {"rank":6,"dish":"Luchi Aloor Dom","emoji":"🫓","where":"Bengali homes, traditional eateries","price":"₹80–₹150","must_try":False,"description":"Fluffy deep-fried white flour bread with spicy potato curry — Sunday breakfast ritual."},
+        {"rank":7,"dish":"Macher Jhol","emoji":"🐟","where":"Traditional Bengali restaurants","price":"₹180–₹300","must_try":False,"description":"Light, turmeric-based fish curry with potatoes and tomatoes — the everyday Bengali staple."},
+        {"rank":8,"dish":"Phuchka","emoji":"🫙","where":"Street vendors across the city","price":"₹20–₹50","must_try":False,"description":"Kolkata's version of pani puri — thinner shells filled with spiced mashed potato and tamarind water."},
+        {"rank":9,"dish":"Sandesh","emoji":"🍬","where":"Bhim Chandra Nag, Girish Ch. Dey","price":"₹20–₹60","must_try":False,"description":"Freshly made cottage cheese mithai flavoured with rose, pistachio or mango — pure elegance."},
+        {"rank":10,"dish":"Jhal Muri","emoji":"🥗","where":"Street vendors, Maidan","price":"₹15–₹30","must_try":False,"description":"Puffed rice tossed with mustard oil, raw mustard, green chili and spices — Kolkata's street snack."},
+    ],
+    "Lucknow": [
+        {"rank":1,"dish":"Galouti Kebab","emoji":"🫔","where":"Tunday Kababi (original)","price":"₹200–₹350","must_try":True,"description":"Ultra-soft minced mutton kebab with 160 spices, invented for a toothless Nawab of Awadh."},
+        {"rank":2,"dish":"Lucknawi Biryani","emoji":"🍚","where":"Wahid Biryani, Idris ki Biryani","price":"₹150–₹300","must_try":True,"description":"Dum-cooked Awadhi biryani with subtle saffron aroma and long-grain basmati — milder than Hyderabadi."},
+        {"rank":3,"dish":"Sheermal","emoji":"🫓","where":"Tunde Kababi area, old bakeries","price":"₹30–₹60","must_try":True,"description":"Saffron-laced sweet flatbread baked in a tandoor — the royal bread of Awadh."},
+        {"rank":4,"dish":"Basket Chaat","emoji":"🫙","where":"Ram Asrey, Royal Café","price":"₹80–₹150","must_try":False,"description":"Crispy fried potato basket filled with dahi, chutney and spiced chickpeas — a Lucknow original."},
+        {"rank":5,"dish":"Nihari Kulcha","emoji":"🍲","where":"Old City restaurants","price":"₹150–₹280","must_try":False,"description":"Silky slow-cooked bone marrow mutton stew with flaky kulcha — a breakfast luxury."},
+        {"rank":6,"dish":"Seekh Kebab","emoji":"🥩","where":"Dastarkhwan, street tandoors","price":"₹150–₹250","must_try":False,"description":"Smoky minced mutton skewers cooked over charcoal — aromatic with mace and cardamom."},
+        {"rank":7,"dish":"Kulfi Falooda","emoji":"🍧","where":"Ram Asrey, Chowk market","price":"₹60–₹120","must_try":False,"description":"Dense rose-flavoured ice cream over vermicelli in basil seeds and rose syrup — a cooling dessert."},
+        {"rank":8,"dish":"Makkhan Malai","emoji":"🍮","where":"Morning vendors near Hazratganj (winter)","price":"₹40–₹80","must_try":False,"description":"Morning dew churned into a delicate frothy cream — a seasonal Lucknow winter delicacy."},
+        {"rank":9,"dish":"Kakori Kebab","emoji":"🫔","where":"Kakori village restaurants","price":"₹250–₹400","must_try":False,"description":"Silkier and more refined than galouti — minced mutton on skewers with rose water and mace."},
+        {"rank":10,"dish":"Shahi Tukda","emoji":"🍞","where":"Traditional mithai shops","price":"₹80–₹150","must_try":False,"description":"Fried bread soaked in rabri and garnished with saffron and silver leaf — royal Awadhi dessert."},
+    ],
+    "Amritsar": [
+        {"rank":1,"dish":"Amritsari Kulcha","emoji":"🫓","where":"Kulcha Land, Bharawan Da Dhaba","price":"₹80–₹150","must_try":True,"description":"Crispy tandoor-baked stuffed bread with aloo or paneer filling, eaten with chole and butter."},
+        {"rank":2,"dish":"Dal Makhani","emoji":"🫕","where":"Kesar Da Dhaba, Brothers' Dhaba","price":"₹150–₹250","must_try":True,"description":"The original slow-cooked black lentil dal with butter and cream — creamy, rich, addictive."},
+        {"rank":3,"dish":"Amritsari Fish","emoji":"🐟","where":"Brothers' Dhaba, Surjit Food Plaza","price":"₹200–₹350","must_try":True,"description":"Spiced batter-fried sole fish with ajwain and chili — a Punjab street food institution."},
+        {"rank":4,"dish":"Langar Prasad","emoji":"🙏","where":"Harmandir Sahib (Golden Temple)","price":"Free","must_try":True,"description":"Simple dal, sabzi and roti served with devotion to 100,000+ people daily — the world's largest free kitchen."},
+        {"rank":5,"dish":"Pinni","emoji":"🍬","where":"Amritsar sweet shops","price":"₹20–₹40 each","must_try":False,"description":"Desi ghee and whole wheat flour sweet balls with dry fruits — a winter energy food."},
+        {"rank":6,"dish":"Lassi","emoji":"🥛","where":"Gurdas Ram Lassiwala, Ahuja Milk","price":"₹60–₹120","must_try":False,"description":"Thick, churned curd with fresh cream and sugar served in tall steel glasses — heaven in summer."},
+        {"rank":7,"dish":"Chole Bhature","emoji":"🫓","where":"Kanha Sweets, street stalls","price":"₹80–₹150","must_try":False,"description":"Spiced chickpea curry with puffed deep-fried bread — Punjab's favourite breakfast."},
+        {"rank":8,"dish":"Sarson Da Saag & Makki Di Roti","emoji":"🌿","where":"Traditional dhabas (winter)","price":"₹100–₹180","must_try":False,"description":"Mustard greens cooked with spinach in desi ghee, eaten with corn flour flatbread — Punjab winter classic."},
+        {"rank":9,"dish":"Pindi Chole","emoji":"🫘","where":"Dhabas around the Golden Temple","price":"₹80–₹150","must_try":False,"description":"Dark, intensely spiced chickpeas slow-cooked with pomegranate and black tea for colour and depth."},
+        {"rank":10,"dish":"Tandoori Chicken","emoji":"🍗","where":"Makhan Fish & Chicken Corner","price":"₹250–₹450","must_try":False,"description":"Yogurt-marinated chicken cooked in a clay tandoor — the Punjab original that started a global trend."},
+    ],
+    "Goa": [
+        {"rank":1,"dish":"Goan Fish Curry Rice","emoji":"🐟","where":"Ritz Classic, Vinayak Family Restaurant","price":"₹150–₹300","must_try":True,"description":"Tangy coconut milk curry with fresh catch of the day, served over Goa's famous parboiled rice."},
+        {"rank":2,"dish":"Prawn Balchão","emoji":"🦐","where":"Fisherman's Wharf, local homes","price":"₹300–₹500","must_try":True,"description":"Fiery, vinegar-pickled prawn preparation with Goan masala — bold, sour and unforgettable."},
+        {"rank":3,"dish":"Pork Sorpotel","emoji":"🐷","where":"Vinayak Restaurant, local Catholic homes","price":"₹250–₹450","must_try":True,"description":"Tangy slow-cooked pork offal curry with vinegar and Goan spices — a Goan Christmas staple."},
+        {"rank":4,"dish":"Bebinca","emoji":"🍮","where":"Confeitaria 31 de Janeiro, bakeries","price":"₹60–₹120","must_try":True,"description":"Layered Goan coconut-egg pudding cooked one layer at a time — takes 4 hours to make."},
+        {"rank":5,"dish":"Xacuti","emoji":"🍗","where":"Traditional Goan restaurants","price":"₹200–₹380","must_try":False,"description":"Chicken or lamb in a complex sauce of roasted coconut, poppy seeds and 15+ spices."},
+        {"rank":6,"dish":"Crab Xec Xec","emoji":"🦀","where":"Seafood shacks, Fisherman's Wharf","price":"₹400–₹700","must_try":False,"description":"Whole crab cooked in a spicy roasted coconut masala — finger-licking and messy."},
+        {"rank":7,"dish":"Feni Cocktails","emoji":"🍹","where":"Beach shacks, local bars","price":"₹80–₹150","must_try":False,"description":"Cashew apple or coconut toddy distilled into Goa's fiery local spirit — the soul of Goa."},
+        {"rank":8,"dish":"Ros Omelette","emoji":"🥚","where":"Street carts near Mapusa, Old Goa","price":"₹50–₹80","must_try":False,"description":"Fried omelette drenched in a tangy Goan curry 'ros' — the ultimate street breakfast."},
+        {"rank":9,"dish":"Goan Prawn Rawa Fry","emoji":"🍤","where":"Seafood restaurants","price":"₹250–₹400","must_try":False,"description":"Semolina-coated prawns shallow-fried in coconut oil — crispy outside, juicy inside."},
+        {"rank":10,"dish":"Poee Bread","emoji":"🍞","where":"Old Goa bakeries, morning markets","price":"₹5–₹15 each","must_try":False,"description":"Crusty, hollow Goan local bread made with toddy — the traditional breakfast bread of Goa."},
+    ],
+    "Jaipur": [
+        {"rank":1,"dish":"Dal Baati Churma","emoji":"🫙","where":"Chokhi Dhani, LMB, traditional dhabas","price":"₹150–₹300","must_try":True,"description":"Hard wheat dumplings baked in a clay oven, eaten with five-lentil dal and sweet crumbled wheat churma."},
+        {"rank":2,"dish":"Laal Maas","emoji":"🥩","where":"Spice Court, Handi Restaurant","price":"₹350–₹600","must_try":True,"description":"Fiery Rajasthani mutton curry with mathania red chilies — intensely spiced and deeply flavoured."},
+        {"rank":3,"dish":"Pyaaz Kachori","emoji":"🧅","where":"Rawat Misthan Bhandar","price":"₹20–₹40","must_try":True,"description":"Crispy deep-fried pastry stuffed with spiced onion filling — Jaipur's most beloved street snack."},
+        {"rank":4,"dish":"Ghewar","emoji":"🍯","where":"LMB, Rawat, sweet shops","price":"₹60–₹150","must_try":False,"description":"Latticed disc-shaped sweet soaked in sugar syrup and topped with rabri and saffron — a Jaipur festive must."},
+        {"rank":5,"dish":"Ker Sangri","emoji":"🫛","where":"Rajasthani thali restaurants","price":"₹150–₹250","must_try":False,"description":"Dried desert beans and berries cooked with spices — a Rajasthani desert survival food now a delicacy."},
+        {"rank":6,"dish":"Mirchi Bada","emoji":"🌶️","where":"Street stalls near Johri Bazaar","price":"₹15–₹30","must_try":False,"description":"Large green chili stuffed with spiced potato, battered and deep-fried — hot and crispy."},
+        {"rank":7,"dish":"Mawa Kachori","emoji":"🥐","where":"LMB Sweets, Rawat","price":"₹30–₹60","must_try":False,"description":"Sweet fried pastry stuffed with mawa (milk solids) and dry fruits — a Rajasthani dessert kachori."},
+        {"rank":8,"dish":"Rajasthani Thali","emoji":"🍱","where":"Chokhi Dhani, Natraj Restaurant","price":"₹250–₹500","must_try":False,"description":"An unlimited spread of gatta curry, baati, dal, kadhi, and desserts — a complete Rajasthani meal."},
+        {"rank":9,"dish":"Malpua","emoji":"🥞","where":"Sweet shops during festivals","price":"₹20–₹40","must_try":False,"description":"Soft, sweet pancakes fried in ghee and soaked in sugar syrup — served during Holi and Diwali."},
+        {"rank":10,"dish":"Missi Roti","emoji":"🫓","where":"Dhabas and local restaurants","price":"₹30–₹60","must_try":False,"description":"Gram flour and wheat flatbread with fenugreek and spices — a nutritious Rajasthani staple."},
+    ],
+    "Kochi": [
+        {"rank":1,"dish":"Kerala Fish Curry","emoji":"🐟","where":"Kayees Biryani Hotel, local homes","price":"₹150–₹300","must_try":True,"description":"Red coconut milk curry with kudampuli (Gamboge) giving it a distinctive tangy depth."},
+        {"rank":2,"dish":"Appam & Stew","emoji":"🥞","where":"Coastal home restaurants","price":"₹120–₹200","must_try":True,"description":"Lacy fermented rice hoppers with a mild coconut milk and vegetable or chicken stew."},
+        {"rank":3,"dish":"Kerala Prawn Moilee","emoji":"🦐","where":"Fort Kochi seafood restaurants","price":"₹300–₹500","must_try":False,"description":"Gently spiced coconut milk prawn curry — light, aromatic and quintessentially Kerala."},
+        {"rank":4,"dish":"Puttu & Kadala Curry","emoji":"🫙","where":"Kerala breakfast spots","price":"₹60–₹100","must_try":True,"description":"Steamed rice flour cylinders with layered coconut, served with spicy black chickpea curry."},
+        {"rank":5,"dish":"Karimeen Pollichathu","emoji":"🐠","where":"Backwater restaurants, Alleppey","price":"₹300–₹500","must_try":False,"description":"Pearl spot fish marinated in masala and grilled in banana leaf — Kerala's signature fish dish."},
+        {"rank":6,"dish":"Beef Fry (Ularthiyathu)","emoji":"🥩","where":"Christian home restaurants, local toddy shops","price":"₹200–₹350","must_try":False,"description":"Slow-cooked dry beef with coconut pieces and spices — a Kerala Christian household staple."},
+        {"rank":7,"dish":"Sadya (Onam Feast)","emoji":"🍱","where":"Traditional restaurants during festivals","price":"₹200–₹400","must_try":False,"description":"20+ dishes on a banana leaf — avial, thoran, sambar, payasam, and more — the pinnacle of Kerala cuisine."},
+        {"rank":8,"dish":"Chemmeen (Prawn) Thoran","emoji":"🥬","where":"Kerala restaurants","price":"₹200–₹350","must_try":False,"description":"Stir-fried prawns with grated coconut, curry leaves and mustard — simple, fragrant, delicious."},
+        {"rank":9,"dish":"Tapioca & Fish Curry","emoji":"🍠","where":"Local Kerala eateries","price":"₹80–₹150","must_try":False,"description":"Boiled tapioca (kappa) eaten with a fiery red fish curry — the comfort food of Kerala's coast."},
+        {"rank":10,"dish":"Payasam","emoji":"🍮","where":"Every Kerala restaurant & sweet shop","price":"₹60–₹120","must_try":False,"description":"Coconut milk rice or vermicelli kheer with cardamom and cashews — Kerala's soul dessert."},
+    ],
+    "Pune": [
+        {"rank":1,"dish":"Misal Pav","emoji":"🫙","where":"Bedekar Misal, Katakirr Misal","price":"₹80–₹150","must_try":True,"description":"Spicy sprouted moth bean curry with a fiery rassa, topped with farsan and served with pav."},
+        {"rank":2,"dish":"Vada Pav","emoji":"🍔","where":"Rohit Vada Pav, street stalls","price":"₹15–₹30","must_try":True,"description":"Pune's beloved batata vada in pav — simpler and spicier than Mumbai's version."},
+        {"rank":3,"dish":"Sabudana Khichdi","emoji":"🫛","where":"Brahmin households, traditional eateries","price":"₹60–₹100","must_try":False,"description":"Sago pearls cooked with peanuts and green chili — the quintessential Maharashtra fasting food."},
+        {"rank":4,"dish":"Puran Poli","emoji":"🫓","where":"Traditional sweet shops, Kayani Bakery","price":"₹60–₹100","must_try":False,"description":"Flatbread stuffed with sweetened chana dal and jaggery — cooked in ghee, eaten with warm milk."},
+        {"rank":5,"dish":"Mastani","emoji":"🥤","where":"Sujata Mastani, Café Goodluck","price":"₹80–₹150","must_try":False,"description":"Pune's iconic thick milkshake topped with ice cream, fruits and dry fruits — a dessert drink."},
+        {"rank":6,"dish":"Kolhapuri Misal","emoji":"🌶️","where":"Kolhapuri restaurants in Pune","price":"₹80–₹150","must_try":False,"description":"Extra-spicy version of misal from Kolhapur with red garlic chutney — not for the faint-hearted."},
+        {"rank":7,"dish":"Bharli Vangi","emoji":"🍆","where":"Maharashtrian restaurants","price":"₹150–₹250","must_try":False,"description":"Baby eggplants stuffed with coconut-peanut masala and slow-cooked in a semi-dry gravy."},
+        {"rank":8,"dish":"Kande Pohe","emoji":"🫕","where":"Morning stalls, Pune breakfast culture","price":"₹30–₹60","must_try":False,"description":"Flattened rice cooked with onions, mustard and turmeric — the quintessential Pune morning breakfast."},
+        {"rank":9,"dish":"Shreekhand","emoji":"🍮","where":"Brahmin sweet shops, Chitale Bandhu","price":"₹60–₹120","must_try":False,"description":"Hung curd whisked with sugar, saffron and cardamom — served chilled as a festive dessert."},
+        {"rank":10,"dish":"Bakarwadi","emoji":"🌀","where":"Chitale Bandhu, Raju Bakarwadi","price":"₹20–₹50","must_try":False,"description":"Crispy pinwheel snack with a sweet-spicy coconut and sesame filling — a Pune iconic snack."},
+    ],
+    "Ahmedabad": [
+        {"rank":1,"dish":"Dhokla","emoji":"🫓","where":"Agashiye, Gordhan Thal","price":"₹60–₹120","must_try":True,"description":"Steamed fermented chickpea flour cakes with mustard and curry leaf tempering — Gujarat's gift to India."},
+        {"rank":2,"dish":"Gujarati Thali","emoji":"🍱","where":"Gordhan Thal, Agashiye, Vishalla","price":"₹200–₹450","must_try":True,"description":"Unlimited sweet-salty-tangy thali with rotli, dal, kadhi, shaak and the iconic Gujarati touch of sweetness."},
+        {"rank":3,"dish":"Fafda Jalebi","emoji":"🍥","where":"Morning stalls across the city","price":"₹30–₹60","must_try":True,"description":"Crispy gram flour strips paired with syrupy jalebis — Ahmedabad's Sunday morning ritual."},
+        {"rank":4,"dish":"Undhiyu","emoji":"🥘","where":"Gujarati restaurants (winter special)","price":"₹150–₹280","must_try":False,"description":"Slow-cooked mixed vegetable and muthia casserole with fenugreek dumplings — a Surat-origin winter dish."},
+        {"rank":5,"dish":"Khandvi","emoji":"🌀","where":"Sweet shops, Gordhan Thal","price":"₹60–₹100","must_try":False,"description":"Silky gram flour rolls with coconut and sesame tempering — requires precise technique to make."},
+        {"rank":6,"dish":"Sev Khamani","emoji":"🫕","where":"Locho stalls, chaat vendors","price":"₹40–₹80","must_try":False,"description":"Steamed and tempered lentil dish topped with sev and pomegranate — a Surat-style variant."},
+        {"rank":7,"dish":"Shrikhand Puri","emoji":"🍮","where":"Traditional Gujarati restaurants","price":"₹100–₹180","must_try":False,"description":"Puffed fried bread served with thick saffron-cardamom hung curd — a festive Gujarati staple."},
+        {"rank":8,"dish":"Lal Shak","emoji":"🌿","where":"Gujarati homes and dhabas","price":"₹80–₹140","must_try":False,"description":"Red amaranth greens stir-fried in sesame-mustard tempering — a healthy Gujarat seasonal saag."},
+        {"rank":9,"dish":"Dabeli","emoji":"🌮","where":"Street vendors, Manek Chowk","price":"₹20–₹40","must_try":False,"description":"Spiced potato filling in a pav with pomegranate, sev and chutneys — a Kutch original street snack."},
+        {"rank":10,"dish":"Makai No Chevdo","emoji":"🌽","where":"Snack shops across the city","price":"₹30–₹70","must_try":False,"description":"Corn poha chivda mixed with spices and nuts — a crunchy Gujarati tea-time snack."},
+    ],
+    "Chandigarh": [
+        {"rank":1,"dish":"Amritsari Kulcha","emoji":"🫓","where":"Pal Dhaba, Gopal Sweets","price":"₹80–₹150","must_try":True,"description":"Crispy butter-baked stuffed kulcha from Amritsar influence — the signature breakfast of Punjab."},
+        {"rank":2,"dish":"Butter Chicken","emoji":"🍗","where":"Pal Dhaba, Chandigarh Club","price":"₹250–₹450","must_try":True,"description":"Rich tomato-butter-cream chicken gravy — Punjab's pride and India's most exported dish."},
+        {"rank":3,"dish":"Lassi","emoji":"🥛","where":"Chandigarh markets, Giani's","price":"₹60–₹120","must_try":True,"description":"Thick creamy churned yogurt drink — sweet, salty or mango — essential Punjab summer refreshment."},
+        {"rank":4,"dish":"Sarson Da Saag Makki Di Roti","emoji":"🌿","where":"Traditional Punjabi restaurants (winter)","price":"₹150–₹250","must_try":False,"description":"Slow-cooked mustard greens with white butter, eaten with rustic corn flatbread — winter soul food."},
+        {"rank":5,"dish":"Chole Bhature","emoji":"🫓","where":"Sindhi Sweets, Gopal Sweets","price":"₹80–₹150","must_try":False,"description":"Spiced chickpea curry with fluffy deep-fried bread — the quintessential Chandigarh lunch staple."},
+        {"rank":6,"dish":"Pinni","emoji":"🍬","where":"Chandigarh sweet shops (winter)","price":"₹20–₹40 each","must_try":False,"description":"Ghee-roasted whole wheat and dry fruit balls — a Punjab winter energy booster."},
+        {"rank":7,"dish":"Chilli Paneer","emoji":"🧀","where":"Chinese-Indian restaurants citywide","price":"₹150–₹250","must_try":False,"description":"Indo-Chinese stir-fried paneer with peppers in a soy-chilli sauce — Chandigarh's favourite fusion."},
+        {"rank":8,"dish":"Kheer","emoji":"🍮","where":"Sweet shops, traditional restaurants","price":"₹60–₹100","must_try":False,"description":"Slow-cooked rice milk pudding with cardamom and almonds — Punjab's festive dessert."},
+        {"rank":9,"dish":"Langar (nearby Gurudwaras)","emoji":"🙏","where":"Rock Garden Gurudwara, Sector 19","price":"Free","must_try":False,"description":"Simple langar food — dal, sabzi, roti served with seva (service) to all visitors."},
+        {"rank":10,"dish":"Shahi Paneer","emoji":"🧀","where":"Punjabi restaurants","price":"₹200–₹350","must_try":False,"description":"Cottage cheese cubes in a rich cashew and cream gravy — a royal Mughal-inspired preparation."},
+    ],
+    "Varanasi": [
+        {"rank":1,"dish":"Banarasi Paan","emoji":"🌿","where":"Keshav Paan, Godowlia Chowk","price":"₹20–₹100","must_try":True,"description":"Betel leaf stuffed with rose gulkand, fennel, sweet lime and exotic fillings — end every meal with this."},
+        {"rank":2,"dish":"Kachori Sabzi","emoji":"🥮","where":"Kashi Chaat Bhandar, street stalls","price":"₹30–₹60","must_try":True,"description":"Crispy dal-stuffed kachori served with aloo sabzi and chutneys — the quintessential Banaras breakfast."},
+        {"rank":3,"dish":"Malaiyyo","emoji":"🍮","where":"Morning vendors near Dashashwamedh Ghat (winter)","price":"₹30–₹60","must_try":True,"description":"Airy saffron foam made from morning dew and milk — a seasonal winter dawn delicacy."},
+        {"rank":4,"dish":"Chena Dahi Vada","emoji":"🫙","where":"Traditional Varanasi sweet shops","price":"₹40–₹80","must_try":False,"description":"Soft lentil dumplings in yogurt with a drizzle of sweet imli chutney — Varanasi's version of dahi vada."},
+        {"rank":5,"dish":"Tamatar Chaat","emoji":"🍅","where":"Deena Chat Bhandar","price":"₹40–₹80","must_try":False,"description":"Tomato-based tangy chaat unique to Varanasi — no puri, just tomatoes, curd and spices."},
+        {"rank":6,"dish":"Baati Chokha","emoji":"🌾","where":"Traditional eateries near the ghats","price":"₹100–₹180","must_try":False,"description":"Charcoal-roasted wheat balls with mashed, flame-roasted eggplant and tomatoes — rustic and earthy."},
+        {"rank":7,"dish":"Litti Chokha","emoji":"🫙","where":"Bihar-UP style restaurants","price":"₹80–₹150","must_try":False,"description":"Roasted wheat flour balls stuffed with sattu, eaten with spiced mashed vegetables."},
+        {"rank":8,"dish":"Thandai","emoji":"🥛","where":"Kashi shops, especially during Holi","price":"₹40–₹80","must_try":False,"description":"Cold spiced milk drink with rose, saffron, almonds and fennel — the Banaras ritual drink."},
+        {"rank":9,"dish":"Laung Lata","emoji":"🍬","where":"Traditional sweet shops","price":"₹20–₹40","must_try":False,"description":"Fried pastry folded like a clove, filled with mawa and dry fruits — Varanasi's traditional mithai."},
+        {"rank":10,"dish":"Malai Toast","emoji":"🍞","where":"Old Varanasi cafes","price":"₹40–₹80","must_try":False,"description":"Thick bread soaked in saffron-infused cream and lightly fried — a rich morning treat."},
+    ],
+    "Vizag": [
+        {"rank":1,"dish":"Chepa Pulusu","emoji":"🐟","where":"Local Andhra restaurants","price":"₹150–₹280","must_try":True,"description":"Tangy tamarind-based fish curry with tomato and green chilies — the soul of coastal Andhra cooking."},
+        {"rank":2,"dish":"Pesarattu","emoji":"🫓","where":"Breakfast hotels across the city","price":"₹60–₹100","must_try":True,"description":"Green moong dal crepes with ginger and onion stuffing — Vizag's beloved Andhra breakfast."},
+        {"rank":3,"dish":"Gongura Chicken","emoji":"🌿","where":"Andhra restaurants","price":"₹250–₹400","must_try":True,"description":"Sorrel leaf-based spicy chicken curry — the tangy, bold signature of Andhra Pradesh."},
+        {"rank":4,"dish":"Royyala Vepudu (Prawn Fry)","emoji":"🦐","where":"Seafood stalls near Vizag beach","price":"₹300–₹500","must_try":False,"description":"Dry-stir-fried prawns with curry leaves, coconut and Andhra spices — the beachside favourite."},
+        {"rank":5,"dish":"Bamboo Chicken","emoji":"🎋","where":"Tribal area restaurants, Lambasingi","price":"₹300–₹500","must_try":False,"description":"Spiced chicken marinated and slow-cooked inside sealed bamboo over open fire — tribal Andhra specialty."},
+        {"rank":6,"dish":"Bobbatlu / Puran Poli","emoji":"🫓","where":"Traditional sweet shops","price":"₹30–₹60","must_try":False,"description":"Sweet flatbread with chana dal and jaggery filling — Andhra version of Maharashtra's puran poli."},
+        {"rank":7,"dish":"Ulavacharu","emoji":"🫕","where":"Traditional Andhra restaurants","price":"₹150–₹250","must_try":False,"description":"Rich broth made from horse gram — Andhra's prized super-food dal served with rice."},
+        {"rank":8,"dish":"Kodi Vepudu","emoji":"🍗","where":"Andhra restaurants, local dhabas","price":"₹200–₹350","must_try":False,"description":"Dry-spiced Andhra-style chicken fry with curry leaves and crispy onions — bold and aromatic."},
+        {"rank":9,"dish":"Vizag Biryani","emoji":"🍚","where":"Local biryani joints","price":"₹150–₹300","must_try":False,"description":"Andhra-style biryani with a spicier profile and green chilies compared to Hyderabadi versions."},
+        {"rank":10,"dish":"Attu (Rice Crepe)","emoji":"🫔","where":"Local breakfast stalls","price":"₹40–₹80","must_try":False,"description":"Thin rice and lentil crepes eaten with andhra-style coconut chutney and sambar."},
+    ],
+    "Madurai": [
+        {"rank":1,"dish":"Mutton Kari Dosa","emoji":"🫔","where":"Famous Annaachi Kadai, Murugan Idli","price":"₹120–₹200","must_try":True,"description":"Crispy dosa stuffed with spiced mutton keema — Madurai's unique and meaty take on the classic dosa."},
+        {"rank":2,"dish":"Jigarthanda","emoji":"🧋","where":"Famous Jigarthanda shops near Meenakshi","price":"₹40–₹80","must_try":True,"description":"Madurai's iconic cold drink with milk, almond gum, nannari syrup and ice cream — unlike anything else."},
+        {"rank":3,"dish":"Madurai Biryani","emoji":"🍚","where":"Amma Mess, Thilaga Biryani","price":"₹120–₹250","must_try":True,"description":"Short-grain seeraga samba rice biryani cooked in earthy spices and raw-cut onions — distinct from other biryanis."},
+        {"rank":4,"dish":"Parotta & Salna","emoji":"🫓","where":"Street side parotta stalls","price":"₹60–₹120","must_try":False,"description":"Layered flaky flatbread with a thin, spicy vegetable or mutton gravy — Tamil Nadu midnight food."},
+        {"rank":5,"dish":"Kari Soru (Non-Veg Rice)","emoji":"🍱","where":"Mess-style restaurants","price":"₹100–₹180","must_try":False,"description":"Steamed rice with mutton gravy, rasam and papad — simple, no-frills Tamil non-veg plate."},
+        {"rank":6,"dish":"Paruthi Paal","emoji":"🥛","where":"Morning vendors near the temple","price":"₹20–₹40","must_try":False,"description":"Cotton seed milk — a Madurai traditional health drink sold on the streets."},
+        {"rank":7,"dish":"Vella Dosai","emoji":"🥞","where":"Traditional Tamil sweet shops","price":"₹30–₹60","must_try":False,"description":"Sweet rice dosa made with jaggery — a festival dosa popular during Karthigai and Pongal."},
+        {"rank":8,"dish":"Kothu Parotta","emoji":"🥙","where":"Night stalls, Madurai streets","price":"₹80–₹150","must_try":False,"description":"Shredded parotta stir-fried with egg and masala on an iron griddle with a rhythmic chopping sound."},
+        {"rank":9,"dish":"Keerai Masiyal","emoji":"🌿","where":"Traditional Tamil restaurants","price":"₹80–₹130","must_try":False,"description":"Mashed drumstick leaves or spinach in a mild gravy — the healthiest item on the Tamil plate."},
+        {"rank":10,"dish":"Adhirasam","emoji":"🍬","where":"Sweet shops, festival markets","price":"₹20–₹40 each","must_try":False,"description":"Deep-fried rice flour and jaggery donuts — a traditional Tamil festival sweet."},
+    ],
+    "Bhopal": [
+        {"rank":1,"dish":"Bhutte Ka Kees","emoji":"🌽","where":"Street vendors near Upper Lake","price":"₹30–₹60","must_try":True,"description":"Grated raw corn cooked in milk and spices — a unique Bhopal morning street food unlike any other."},
+        {"rank":2,"dish":"Keema Samosa","emoji":"🥟","where":"Old Bhopal bakeries, Chatori Gali","price":"₹20–₹40","must_try":True,"description":"Spiced minced mutton in a crispy triangular pastry — Bhopal's must-have Muslim quarter snack."},
+        {"rank":3,"dish":"Biryani (Bhopali style)","emoji":"🍚","where":"Javed Hotel, Bapu Ki Kutia","price":"₹150–₹280","must_try":True,"description":"Fragrant dum biryani with a Bhopali touch of kewra water and star anise."},
+        {"rank":4,"dish":"Shahi Sheermal","emoji":"🫓","where":"Old Bhopal bakeries","price":"₹30–₹60","must_try":False,"description":"Saffron-scented flatbread baked in tandoor — the royal bread of Bhopal's Nawabi tradition."},
+        {"rank":5,"dish":"Bhopali Gosht Korma","emoji":"🥘","where":"Muslim heritage restaurants","price":"₹250–₹400","must_try":False,"description":"Slow-cooked mutton in a rich yogurt and cashew nut gravy with Nawabi spicing."},
+        {"rank":6,"dish":"Dal Bafla","emoji":"🫙","where":"Traditional Malwa restaurants","price":"₹120–₹200","must_try":False,"description":"Baked wheat dumplings served with five-lentil dal and ghee — Madhya Pradesh's cousin of Rajasthani dal baati."},
+        {"rank":7,"dish":"Seekh Kebab","emoji":"🥩","where":"Bazaar street stalls, weekend markets","price":"₹150–₹250","must_try":False,"description":"Charcoal-grilled minced meat skewers with a Bhopali spice blend of ratan jot and javitri."},
+        {"rank":8,"dish":"Mawa Bati","emoji":"🍬","where":"Sweet shops across the city","price":"₹20–₹40 each","must_try":False,"description":"Soft fried milk solids dumplings soaked in sugar syrup — a beloved Madhya Pradesh mithai."},
+        {"rank":9,"dish":"Poha Jalebi","emoji":"🍥","where":"Morning vendors, Chatori Gali","price":"₹30–₹60","must_try":False,"description":"Flattened rice cooked with onion and mustard, paired with crispy fresh jalebis — the Bhopal breakfast."},
+        {"rank":10,"dish":"Chakki Ki Shak","emoji":"🫕","where":"Traditional Bhopal eateries","price":"₹80–₹150","must_try":False,"description":"Cooked wheat gluten in a spiced tomato-onion gravy — a unique Bhopali vegetarian specialty."},
+    ],
+    "Indore": [
+        {"rank":1,"dish":"Poha Jalebi","emoji":"🍥","where":"Vijay Chaat House, Chhappan Dukaan","price":"₹30–₹60","must_try":True,"description":"Thick, fluffy beaten rice cooked with onion and curry leaves, paired with crispy jalebis — Indore's morning ritual."},
+        {"rank":2,"dish":"Sabudana Khichdi","emoji":"🫛","where":"Traditional Indori shops","price":"₹40–₹80","must_try":True,"description":"Sago pearls with crushed peanuts and green chili — the Indori version is coarser and more textured."},
+        {"rank":3,"dish":"Garadu Chaat","emoji":"🥔","where":"Winter street stalls across Indore","price":"₹30–₹60","must_try":True,"description":"Deep-fried yam pieces tossed with lime, black salt and cumin — a unique Indore winter street snack."},
+        {"rank":4,"dish":"Bhutte Ka Kees","emoji":"🌽","where":"Sarafa Bazaar night market","price":"₹30–₹60","must_try":False,"description":"Grated corn cooked with milk, green chilies and coconut — a classic Madhya Pradesh breakfast."},
+        {"rank":5,"dish":"Dahi Vada","emoji":"🫙","where":"Chaat stalls, Vijay Chaat","price":"₹50–₹90","must_try":False,"description":"Lentil dumplings soaked in yogurt with tamarind and mint chutneys — Indori chaat at its finest."},
+        {"rank":6,"dish":"Namkeen (Indori style)","emoji":"🌀","where":"Vijay Namkeen, Shree brand","price":"₹20–₹50","must_try":False,"description":"Indore is the namkeen capital of India — sev, ratlami sev and chakli are must-try tea-time snacks."},
+        {"rank":7,"dish":"Dal Baafle","emoji":"🫙","where":"Traditional MP restaurants","price":"₹120–₹200","must_try":False,"description":"Wheat balls baked over coal embers, served with five-dal mix and ghee — hearty and wholesome."},
+        {"rank":8,"dish":"Shikanji","emoji":"🍋","where":"Street vendors during summer","price":"₹20–₹40","must_try":False,"description":"Chilled lemonade with black salt, cumin and ginger — Indore's go-to summer street drink."},
+        {"rank":9,"dish":"Mawa Bafla","emoji":"🍬","where":"Indore sweet shops","price":"₹20–₹40","must_try":False,"description":"Sweet fried dough balls soaked in sugar syrup — a Madhya Pradesh favourite."},
+        {"rank":10,"dish":"Biryani (Indori style)","emoji":"🍚","where":"Local biryani joints","price":"₹120–₹250","must_try":False,"description":"Spiced rice biryani with a Malwa region twist — slightly lighter than Hyderabadi, aromatic."},
+    ],
+    "Agra": [
+        {"rank":1,"dish":"Petha","emoji":"🍬","where":"Panchhi Petha, Old Agra","price":"₹20–₹100","must_try":True,"description":"Translucent white gourd candy in 20+ flavours — angoori, kesar, pan — Agra's world-famous sweet."},
+        {"rank":2,"dish":"Mughlai Chicken","emoji":"🍗","where":"Pinch of Spice, Peshawri","price":"₹350–₹600","must_try":True,"description":"Slow-cooked chicken in a Mughal-era spice blend with mace, rose water and fried onions."},
+        {"rank":3,"dish":"Dalmoth","emoji":"🌀","where":"Sweet shops near Taj Mahal area","price":"₹30–₹80","must_try":False,"description":"Spicy fried lentil and peanut mixture — Agra's quintessential savoury snack."},
+        {"rank":4,"dish":"Bedai & Jalebi","emoji":"🍥","where":"Morning street stalls","price":"₹40–₹80","must_try":False,"description":"Spicy stuffed kachori with urad dal filling, paired with crispy jalebis — the Agra breakfast combo."},
+        {"rank":5,"dish":"Mutton Biryani (Mughlai)","emoji":"🍚","where":"Mughal-era style restaurants","price":"₹200–₹350","must_try":False,"description":"Rich saffron-scented biryani with tender mutton, reflecting Agra's royal Mughal heritage."},
+        {"rank":6,"dish":"Gajak","emoji":"🍫","where":"Agra sweet shops (winter)","price":"₹20–₹60","must_try":False,"description":"Sesame and jaggery brittle — a winter sweet also popular during Makar Sankranti."},
+        {"rank":7,"dish":"Chaat (Agra style)","emoji":"🥗","where":"Deviram's Chaat, street stalls","price":"₹30–₹60","must_try":False,"description":"Agra-style tangy chaat with golgappes and aloo tikki — with a distinct pungent tamarind chutney."},
+        {"rank":8,"dish":"Tandoori Roti & Dal","emoji":"🫓","where":"Local dhabas near the Taj","price":"₹80–₹150","must_try":False,"description":"Simple whole-wheat tandoor bread with yellow lentil dal — the everyman's Agra meal."},
+        {"rank":9,"dish":"Korma (Agra Mughlai)","emoji":"🥘","where":"Traditional restaurants","price":"₹300–₹500","must_try":False,"description":"Rich almond and poppy seed-based mutton gravy — a recipe tracing back to the Mughal royal kitchen."},
+        {"rank":10,"dish":"Sohan Papdi","emoji":"🍬","where":"Sweet shops citywide","price":"₹20–₹60","must_try":False,"description":"Flaky, melt-in-the-mouth cardamom sweet — the famous gift box sweet of Agra."},
+    ],
+}
+
 # Curated coordinates for famous restaurants in each city
 CITY_COORDS = {
     "Hyderabad": (17.3850, 78.4867),
@@ -1110,3 +1357,259 @@ with tab4:
             &nbsp;·&nbsp; AI-detected: {len([r for r in filtered if r.get('ai')])}
             &nbsp;·&nbsp; Click any marker for details
         </div>""", unsafe_allow_html=True)
+
+# ════════════════════════════════════════════════════
+#  TAB 5 — CITY TOP 10 FOODS
+# ════════════════════════════════════════════════════
+with tab5:
+    st.markdown("""
+    <div class="sec-head" style="margin-top:4px">
+      <div class="sec-head-text">🏙️ Top 10 Must-Try Foods by City</div>
+      <div class="sec-head-line"></div>
+    </div>""", unsafe_allow_html=True)
+
+    # City selector
+    top10_city = st.selectbox(
+        "Choose a city to explore its top 10 iconic dishes:",
+        list(CITY_TOP_10_FOODS.keys()),
+        index=list(CITY_TOP_10_FOODS.keys()).index(city) if city in CITY_TOP_10_FOODS else 0,
+        key="top10_city_sel"
+    )
+
+    foods = CITY_TOP_10_FOODS.get(top10_city, [])
+
+    if foods:
+        # Hero intro
+        must_try_count = sum(1 for f in foods if f.get("must_try"))
+        avg_price = "₹20–₹600"
+        st.markdown(f"""
+        <div style="background:var(--ink);border-radius:16px;padding:20px 28px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--spice-lt);font-weight:700;margin-bottom:8px">Curated Food Guide</div>
+            <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:#F5EFE6">{top10_city}'s <em style="color:var(--gold-lt)">Food Icons</em></div>
+          </div>
+          <div style="display:flex;gap:24px">
+            <div style="text-align:center">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:var(--gold-lt)">{len(foods)}</div>
+              <div style="font-size:10px;color:rgba(245,239,230,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-top:4px">Dishes</div>
+            </div>
+            <div style="width:1px;height:50px;background:rgba(255,255,255,0.1);align-self:center"></div>
+            <div style="text-align:center">
+              <div style="font-family:'DM Mono',monospace;font-size:28px;font-weight:500;color:#F472B6">{must_try_count}</div>
+              <div style="font-size:10px;color:rgba(245,239,230,0.4);text-transform:uppercase;letter-spacing:0.12em;margin-top:4px">Must Try</div>
+            </div>
+          </div>
+        </div>""", unsafe_allow_html=True)
+
+        # Filter toggle
+        show_must_try_only = st.toggle("⭐ Show Must-Try dishes only", value=False, key="must_try_toggle")
+        display_foods = [f for f in foods if f.get("must_try")] if show_must_try_only else foods
+
+        # Render food cards in grid
+        for i in range(0, len(display_foods), 2):
+            c1, c2 = st.columns(2)
+            for col, food in zip([c1, c2], display_foods[i:i+2]):
+                must_try_badge = ""
+                if food.get("must_try"):
+                    must_try_badge = '<span style="display:inline-block;padding:2px 10px;border-radius:20px;background:rgba(250,204,21,0.15);border:1px solid rgba(250,204,21,0.3);font-size:9px;font-weight:700;color:#FACC15;letter-spacing:0.12em;text-transform:uppercase;margin-left:8px">⭐ MUST TRY</span>'
+                with col:
+                    st.markdown(f"""
+                    <div style="background:#FFFCF8;border:1px solid rgba(196,65,26,0.15);border-radius:16px;
+                                margin-bottom:16px;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s">
+                      <div style="background:linear-gradient(135deg,#0D0A08 0%,#1C1410 100%);padding:16px 20px">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+                          <div style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--spice-lt)">#{food['rank']}</div>
+                          <div style="font-size:32px">{food['emoji']}</div>
+                        </div>
+                        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#F5EFE6;line-height:1.3">
+                          {food['dish']}{must_try_badge}
+                        </div>
+                      </div>
+                      <div style="padding:16px 20px">
+                        <div style="font-size:13px;color:#57534E;line-height:1.7;margin-bottom:12px">{food['description']}</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                          <div style="background:rgba(196,65,26,0.04);border:1px solid rgba(196,65,26,0.1);border-radius:8px;padding:8px 12px">
+                            <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7A6F65;margin-bottom:3px">WHERE TO EAT</div>
+                            <div style="font-size:12px;font-weight:600;color:#C4411A">{food['where']}</div>
+                          </div>
+                          <div style="background:rgba(212,160,23,0.05);border:1px solid rgba(212,160,23,0.15);border-radius:8px;padding:8px 12px">
+                            <div style="font-size:9px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#7A6F65;margin-bottom:3px">PRICE RANGE</div>
+                            <div style="font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:#D4A017">{food['price']}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>""", unsafe_allow_html=True)
+
+        # Summary chart
+        st.markdown("""<div class="sec-head" style="margin-top:8px"><div class="sec-head-text">📊 Price Range Overview</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
+        df_foods = pd.DataFrame([{
+            "Dish": f"{f['emoji']} {f['dish'][:30]}",
+            "Rank": f['rank'],
+            "Must Try": "⭐ Must Try" if f.get("must_try") else "Good to Try",
+        } for f in foods])
+        fig_bar = px.bar(
+            df_foods, x="Dish", y="Rank",
+            color="Must Try",
+            color_discrete_map={"⭐ Must Try": "#C4411A", "Good to Try": "#D4A017"},
+            template="simple_white",
+            title=f"Top 10 Dishes of {top10_city} — Ranked",
+        )
+        fig_bar.update_layout(
+            height=320, margin=dict(l=0, r=0, t=40, b=0),
+            plot_bgcolor="#FFFCF8", paper_bgcolor="#FFFCF8",
+            font=dict(family="DM Sans", size=11),
+            xaxis=dict(tickangle=-30, tickfont=dict(size=9)),
+            yaxis=dict(autorange="reversed", title="Rank"),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02),
+        )
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+    else:
+        st.info(f"Top 10 food data for {top10_city} is being curated. Check back soon!")
+
+
+# ════════════════════════════════════════════════════
+#  TAB 6 — AI RECIPE CHATBOT
+# ════════════════════════════════════════════════════
+with tab6:
+    import os
+    from anthropic import Anthropic as _Anthropic
+    from dotenv import load_dotenv as _load_dotenv
+    _load_dotenv()
+
+    st.markdown("""
+    <div class="sec-head" style="margin-top:4px">
+      <div class="sec-head-text">🤖 AI Recipe & Food Knowledge Assistant</div>
+      <div class="sec-head-line"></div>
+    </div>""", unsafe_allow_html=True)
+
+    # Chat header card
+    st.markdown(f"""
+    <div style="background:var(--ink);border-radius:16px;padding:20px 28px;margin-bottom:20px">
+      <div style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--spice-lt);font-weight:700;margin-bottom:8px">Powered by Claude AI</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;color:#F5EFE6;margin-bottom:8px">
+        Your Personal <em style="color:var(--gold-lt)">Indian Food Expert</em>
+      </div>
+      <div style="font-size:12px;color:rgba(245,239,230,0.5);line-height:1.8">
+        Ask me anything about Indian cuisine — recipes, cooking techniques, ingredient substitutions,
+        regional variations, nutritional info, pairing suggestions, or restaurant recommendations.
+      </div>
+    </div>""", unsafe_allow_html=True)
+
+    # Suggested prompts
+    col_s1, col_s2, col_s3, col_s4 = st.columns(4)
+    suggestions = [
+        "🍚 How to make Hyderabadi Biryani?",
+        "🌶️ What is the secret to Chettinad masala?",
+        "🥘 Vegetarian version of Butter Chicken?",
+        "☕ How to brew perfect South Indian filter coffee?",
+    ]
+    for col, sug in zip([col_s1, col_s2, col_s3, col_s4], suggestions):
+        with col:
+            if st.button(sug, key=f"sug_{sug[:15]}", use_container_width=True):
+                st.session_state.chat_history.append({"role": "user", "content": sug})
+
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+
+    # Display chat messages
+    chat_container = st.container()
+    with chat_container:
+        for msg in st.session_state.chat_history:
+            if msg["role"] == "user":
+                st.markdown(f"""
+                <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
+                  <div style="max-width:75%;background:linear-gradient(135deg,var(--spice) 0%,#E8572A 100%);
+                              border-radius:18px 18px 4px 18px;padding:12px 18px;color:white;
+                              font-size:14px;line-height:1.6;box-shadow:0 4px 16px rgba(196,65,26,0.25)">
+                    {msg['content']}
+                  </div>
+                </div>""", unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div style="display:flex;justify-content:flex-start;margin-bottom:12px;gap:12px">
+                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0D0A08,#2A1F18);
+                              border:2px solid rgba(196,65,26,0.4);display:flex;align-items:center;justify-content:center;
+                              font-size:16px;flex-shrink:0">🤖</div>
+                  <div style="max-width:80%;background:#FFFCF8;border:1px solid rgba(196,65,26,0.15);
+                              border-radius:4px 18px 18px 18px;padding:14px 18px;
+                              font-size:14px;line-height:1.8;color:#3C3530;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+                    {msg['content'].replace(chr(10), '<br>')}
+                  </div>
+                </div>""", unsafe_allow_html=True)
+
+    # Check if we need to generate a response (last message is from user)
+    if st.session_state.chat_history and st.session_state.chat_history[-1]["role"] == "user":
+        _api_key = os.getenv("ANTHROPIC_API_KEY")
+        if _api_key:
+            _client = _Anthropic(api_key=_api_key)
+            _system_prompt = """You are an expert Indian food and recipe assistant with deep knowledge of:
+- All regional Indian cuisines: North Indian, South Indian, East Indian, West Indian, and tribal foods
+- Authentic recipes with exact measurements, techniques, and step-by-step instructions
+- The history and cultural context of Indian dishes
+- Ingredient substitutions for hard-to-find items
+- Street food, home cooking, restaurant cooking, and festive foods
+- Health and nutrition aspects of Indian ingredients
+- Pairing suggestions (drinks, sides, chutneys)
+- Cooking equipment (tawa, kadai, pressure cooker, tandoor techniques)
+- Spice blends (masalas) and how to make them from scratch
+- Regional variations of the same dish (e.g., how biryani differs across India)
+- Famous restaurants and their signature dishes across Indian cities
+- Modern fusion twists on traditional recipes
+- Seasonal and festival-specific dishes
+
+Always be enthusiastic, specific, and helpful. When giving recipes, include:
+1. Ingredients with quantities
+2. Step-by-step method
+3. Tips for getting it right
+4. Common mistakes to avoid
+5. Variations or regional twists
+
+Format responses clearly with headers and bullet points where helpful. Keep responses warm, conversational and packed with authentic knowledge."""
+
+            with st.spinner("🤖 Chef AI is thinking..."):
+                try:
+                    _messages = [{"role": m["role"], "content": m["content"]} for m in st.session_state.chat_history]
+                    _response = _client.messages.create(
+                        model="claude-haiku-4-5-20251001",
+                        max_tokens=1500,
+                        system=_system_prompt,
+                        messages=_messages,
+                    )
+                    _reply = _response.content[0].text
+                    st.session_state.chat_history.append({"role": "assistant", "content": _reply})
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"❌ AI Error: {str(e)}")
+        else:
+            st.warning("⚠️ ANTHROPIC_API_KEY not set in .env file. Please add your API key to enable the chatbot.")
+
+    # Chat input
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+    col_inp, col_send = st.columns([5, 1])
+    with col_inp:
+        user_input = st.text_input(
+            "Ask about any Indian food, recipe, or cooking technique...",
+            key="chat_input",
+            label_visibility="collapsed",
+            placeholder="e.g. How do I make fluffy idlis? What spices go in biryani masala?",
+        )
+    with col_send:
+        send_btn = st.button("Send 🚀", type="primary", use_container_width=True)
+
+    if send_btn and user_input.strip():
+        st.session_state.chat_history.append({"role": "user", "content": user_input.strip()})
+        st.rerun()
+
+    # Clear chat button
+    if st.session_state.chat_history:
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+        if st.button("🗑️ Clear Chat History", type="secondary"):
+            st.session_state.chat_history = []
+            st.rerun()
+
+    # Footer note
+    st.markdown("""
+    <div class="status-info" style="margin-top:16px">
+        🤖 &nbsp; Powered by <strong>Claude AI (Haiku)</strong> — Ask about any Indian dish, recipe, ingredient, or cooking technique.
+        Responses are based on AI knowledge and may vary from local restaurant preparations.
+    </div>""", unsafe_allow_html=True)
