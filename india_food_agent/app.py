@@ -187,7 +187,7 @@ st.markdown("""
   <div style="font-size:40px">🍛</div>
   <div>
     <div class="hero-title">भारत <span>FoodTrend</span> Agent</div>
-    <div class="hero-sub">Python · Web Scraping · Claude AI · Every Indian State</div>
+    <div class="hero-sub">Python · Web Scraping ·HackSHEK· Every Indian State</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
