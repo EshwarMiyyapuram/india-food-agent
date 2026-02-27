@@ -374,8 +374,8 @@ st.markdown(f"""
 <div class="hero">
   <div style="position:relative;z-index:1">
     <div class="hero-eyebrow">● Live Intelligence Dashboard</div>
-    <div class="hero-title">भारत <em>FoodTrend </em><br>Agent</div>
-    <div class="hero-tagline">Done by Siri & Co</div>
+    <div class="hero-title">भारत <em>FoodTrend</em><br>Agent</div>
+    <div class="hero-tagline">Scraping · Analysing · Generating · Winning</div>
   </div>
   <div class="hero-stats" style="position:relative;z-index:1">
     <div class="hero-stat-item"><div class="hero-stat-num">20</div><div class="hero-stat-lbl">Cities</div></div>
@@ -506,7 +506,7 @@ if gen_btn:
 # ══════════════════════════════════════════
 #  TABS
 # ══════════════════════════════════════════
-tab1, tab2, tab3 = st.tabs(["📊  Trend Analysis", "🍽  Weekend Specials", "📋  Weekly Report"])
+tab1, tab2, tab3, tab4 = st.tabs(["📊  Trend Analysis", "🍽  Weekend Specials", "📋  Weekly Report", "🗺️  Restaurant Map"])
 
 
 # ════════════════════════════════════════════════════
@@ -813,3 +813,300 @@ with tab3:
                     "Gross Margin": d.get("gross_margin_pct",""), "Demand": d.get("predicted_demand",""),
                 } for d in dishes])
                 st.dataframe(df3, use_container_width=True, hide_index=True)
+
+
+# ════════════════════════════════════════════════════
+#  TAB 4 — RESTAURANT MAP
+# ════════════════════════════════════════════════════
+
+# Curated coordinates for famous restaurants in each city
+CITY_COORDS = {
+    "Hyderabad": (17.3850, 78.4867),
+    "Chennai":   (13.0827, 80.2707),
+    "Mumbai":    (19.0760, 72.8777),
+    "Delhi":     (28.6139, 77.2090),
+    "Bengaluru": (12.9716, 77.5946),
+    "Kolkata":   (22.5726, 88.3639),
+    "Lucknow":   (26.8467, 80.9462),
+    "Amritsar":  (31.6340, 74.8723),
+    "Goa":       (15.2993, 74.1240),
+    "Jaipur":    (26.9124, 75.7873),
+    "Kochi":     (9.9312,  76.2673),
+    "Indore":    (22.7196, 75.8577),
+    "Pune":      (18.5204, 73.8567),
+    "Ahmedabad": (23.0225, 72.5714),
+    "Chandigarh":(30.7333, 76.7794),
+    "Varanasi":  (25.3176, 82.9739),
+    "Agra":      (27.1767, 78.0081),
+    "Vizag":     (17.6868, 83.2185),
+    "Madurai":   (9.9252,  78.1198),
+    "Bhopal":    (23.2599, 77.4126),
+}
+
+FAMOUS_RESTAURANTS = {
+    "Hyderabad": [
+        {"name": "Paradise Biryani", "lat": 17.4484, "lon": 78.4952, "specialty": "Dum Biryani", "type": "Biryani"},
+        {"name": "Shah Ghouse Café", "lat": 17.3616, "lon": 78.4747, "specialty": "Haleem & Biryani", "type": "Mughlai"},
+        {"name": "Nimrah Café", "lat": 17.3596, "lon": 78.4756, "specialty": "Irani Chai & Osmania Biscuits", "type": "Irani"},
+        {"name": "Bawarchi", "lat": 17.4007, "lon": 78.4769, "specialty": "Pathar Gosht", "type": "Mughlai"},
+        {"name": "Hotel Shadab", "lat": 17.3620, "lon": 78.4761, "specialty": "Dum Biryani & Haleem", "type": "Mughlai"},
+        {"name": "Chutneys", "lat": 17.4265, "lon": 78.4489, "specialty": "South Indian Breakfast", "type": "South Indian"},
+        {"name": "Pista House", "lat": 17.3630, "lon": 78.4770, "specialty": "Haleem", "type": "Mughlai"},
+        {"name": "B2 (Breakfast to Biryani)", "lat": 17.4503, "lon": 78.3820, "specialty": "Fusion Biryani", "type": "Café"},
+    ],
+    "Chennai": [
+        {"name": "Murugan Idli Shop", "lat": 13.0490, "lon": 80.2141, "specialty": "Idli & Sambar", "type": "South Indian"},
+        {"name": "Saravana Bhavan", "lat": 13.0731, "lon": 80.2609, "specialty": "Thali & Dosas", "type": "South Indian"},
+        {"name": "Hotel Palmgrove", "lat": 13.0570, "lon": 80.2458, "specialty": "Chettinad Cuisine", "type": "Chettinad"},
+        {"name": "Ratna Café", "lat": 13.0730, "lon": 80.2610, "specialty": "Filter Coffee & Idlis", "type": "Traditional"},
+        {"name": "Junior Kuppanna", "lat": 13.0530, "lon": 80.2491, "specialty": "Biriyani & Chettinad", "type": "Biryani"},
+        {"name": "Dakshin (ITC)", "lat": 13.0602, "lon": 80.2572, "specialty": "Coastal South Indian", "type": "Fine Dining"},
+    ],
+    "Mumbai": [
+        {"name": "Britannia & Co.", "lat": 18.9288, "lon": 72.8356, "specialty": "Berry Pulao & Dhansak", "type": "Parsi"},
+        {"name": "Leopold Café", "lat": 18.9219, "lon": 72.8325, "specialty": "Continental & Cocktails", "type": "Café"},
+        {"name": "Trishna", "lat": 18.9322, "lon": 72.8346, "specialty": "Seafood", "type": "Seafood"},
+        {"name": "Bademiya", "lat": 18.9227, "lon": 72.8326, "specialty": "Seekh Kebabs", "type": "Street Food"},
+        {"name": "Café Mondegar", "lat": 18.9225, "lon": 72.8333, "specialty": "Goan & Continental", "type": "Café"},
+        {"name": "Swati Snacks", "lat": 18.9712, "lon": 72.8095, "specialty": "Gujarati Street Food", "type": "Street Food"},
+        {"name": "Sarjan Restaurant", "lat": 19.0560, "lon": 73.0002, "specialty": "Malvani Seafood", "type": "Seafood"},
+    ],
+    "Delhi": [
+        {"name": "Karim's", "lat": 28.6555, "lon": 77.2333, "specialty": "Mutton Korma & Seekh Kebab", "type": "Mughlai"},
+        {"name": "Al Jawahar", "lat": 28.6549, "lon": 77.2330, "specialty": "Old Delhi Mughlai", "type": "Mughlai"},
+        {"name": "Bukhara (ITC Maurya)", "lat": 28.5993, "lon": 77.1710, "specialty": "Dal Bukhara & Tandoori", "type": "Fine Dining"},
+        {"name": "Paranthe Wali Gali", "lat": 28.6557, "lon": 77.2303, "specialty": "Stuffed Paranthas", "type": "Street Food"},
+        {"name": "Moti Mahal", "lat": 28.6557, "lon": 77.2293, "specialty": "Butter Chicken (original)", "type": "Mughlai"},
+        {"name": "Indian Accent", "lat": 28.5933, "lon": 77.1967, "specialty": "New Indian Cuisine", "type": "Fine Dining"},
+    ],
+    "Bengaluru": [
+        {"name": "MTR (Mavalli Tiffin Room)", "lat": 12.9433, "lon": 77.5787, "specialty": "Rava Idli & Filter Coffee", "type": "South Indian"},
+        {"name": "Vidyarthi Bhavan", "lat": 12.9431, "lon": 77.5815, "specialty": "Masala Dosa", "type": "South Indian"},
+        {"name": "CTR (Central Tiffin Room)", "lat": 13.0082, "lon": 77.5576, "specialty": "Benne Masala Dosa", "type": "South Indian"},
+        {"name": "Empire Restaurant", "lat": 12.9716, "lon": 77.6012, "specialty": "Biryani & Kebabs", "type": "Biryani"},
+        {"name": "Koshy's", "lat": 12.9753, "lon": 77.6083, "specialty": "Anglo-Indian", "type": "Café"},
+        {"name": "Toit Brewpub", "lat": 12.9747, "lon": 77.6090, "specialty": "Craft Beer & Burgers", "type": "Brewpub"},
+    ],
+    "Goa": [
+        {"name": "Fisherman's Wharf", "lat": 15.5070, "lon": 73.9710, "specialty": "Goan Seafood", "type": "Seafood"},
+        {"name": "Vinayak Family Restaurant", "lat": 15.5537, "lon": 73.7605, "specialty": "Pork Sorpotel & Fish Curry", "type": "Goan"},
+        {"name": "Britto's", "lat": 15.5517, "lon": 73.7620, "specialty": "Seafood & Goan Specials", "type": "Seafood"},
+        {"name": "Thalassa", "lat": 15.6053, "lon": 73.7382, "specialty": "Greek-Goan Fusion", "type": "Fusion"},
+        {"name": "Ritz Classic", "lat": 15.4909, "lon": 73.8278, "specialty": "Goan Thali & Fish Curry Rice", "type": "Goan"},
+    ],
+    "Jaipur": [
+        {"name": "Laxmi Misthan Bhandar (LMB)", "lat": 26.9196, "lon": 75.8298, "specialty": "Rajasthani Thali & Ghewar", "type": "Rajasthani"},
+        {"name": "Chokhi Dhani", "lat": 26.8130, "lon": 75.8298, "specialty": "Authentic Rajasthani Thali", "type": "Rajasthani"},
+        {"name": "Niro's", "lat": 26.9142, "lon": 75.8237, "specialty": "North Indian & Continental", "type": "Multi-cuisine"},
+        {"name": "Rawat Misthan Bhandar", "lat": 26.9095, "lon": 75.8180, "specialty": "Pyaaz Kachori & Sweets", "type": "Street Food"},
+    ],
+    "Kolkata": [
+        {"name": "Peter Cat", "lat": 22.5508, "lon": 88.3517, "specialty": "Chelo Kebab", "type": "Continental"},
+        {"name": "Flurys", "lat": 22.5499, "lon": 88.3510, "specialty": "English Breakfast & Pastries", "type": "Café"},
+        {"name": "Kewpie's Kitchen", "lat": 22.5252, "lon": 88.3598, "specialty": "Bengali Home Cooking", "type": "Bengali"},
+        {"name": "Arsalan", "lat": 22.5205, "lon": 88.3710, "specialty": "Kolkata Biryani", "type": "Biryani"},
+    ],
+    "Lucknow": [
+        {"name": "Tunday Kababi", "lat": 26.8621, "lon": 80.9123, "specialty": "Galouti Kebab", "type": "Mughlai"},
+        {"name": "Wahid Biryani", "lat": 26.8679, "lon": 80.9209, "specialty": "Lucknawi Biryani", "type": "Biryani"},
+        {"name": "Idris ki Biryani", "lat": 26.8610, "lon": 80.9200, "specialty": "Pakki Biryani", "type": "Biryani"},
+        {"name": "Dastarkhwan", "lat": 26.8434, "lon": 80.9341, "specialty": "Awadhi Cuisine", "type": "Mughlai"},
+    ],
+    "Amritsar": [
+        {"name": "Langar (Golden Temple)", "lat": 31.6200, "lon": 74.8765, "specialty": "Free Community Meal", "type": "Traditional"},
+        {"name": "Bharawan Da Dhaba", "lat": 31.6241, "lon": 74.8756, "specialty": "Amritsari Kulcha & Dal Makhani", "type": "Dhaba"},
+        {"name": "Brothers' Dhaba", "lat": 31.6248, "lon": 74.8753, "specialty": "Amritsari Fish & Kulcha", "type": "Dhaba"},
+        {"name": "Kesar Da Dhaba", "lat": 31.6232, "lon": 74.8748, "specialty": "Dal Makhani & Paneer", "type": "Dhaba"},
+    ],
+}
+
+# Default fallback with a few generic entries
+DEFAULT_RESTAURANTS = [
+    {"name": "Famous Local Restaurant 1", "lat": 0, "lon": 0, "specialty": "Local Specialties", "type": "Traditional"},
+]
+
+TYPE_COLORS = {
+    "Biryani":     "#E23744",
+    "Mughlai":     "#8B4513",
+    "South Indian":"#22A05A",
+    "Irani":       "#D4A017",
+    "Café":        "#8B5CF6",
+    "Seafood":     "#0EA5E9",
+    "Street Food": "#FB923C",
+    "Fine Dining": "#6366F1",
+    "Parsi":       "#EC4899",
+    "Rajasthani":  "#F59E0B",
+    "Bengali":     "#10B981",
+    "Traditional": "#64748B",
+    "Dhaba":       "#92400E",
+    "Goan":        "#14B8A6",
+    "Brewpub":     "#A3E635",
+    "Fusion":      "#F43F5E",
+    "Chettinad":   "#7C3AED",
+    "Multi-cuisine":"#0F766E",
+    "Continental": "#2563EB",
+}
+
+with tab4:
+    try:
+        import folium
+        from streamlit_folium import st_folium
+        HAS_FOLIUM = True
+    except ImportError:
+        HAS_FOLIUM = False
+
+    st.markdown("""
+    <div class="sec-head" style="margin-top:4px">
+      <div class="sec-head-text">🗺️ Famous & Trending Restaurant Locations</div>
+      <div class="sec-head-line"></div>
+    </div>""", unsafe_allow_html=True)
+
+    if not HAS_FOLIUM:
+        st.error("📦 Please install map dependencies: `pip install folium streamlit-folium`")
+        st.code("pip install folium streamlit-folium", language="bash")
+    else:
+        # ── Controls ─────────────────────────────────────────────
+        col_ctrl1, col_ctrl2, col_ctrl3 = st.columns([2, 2, 3])
+        with col_ctrl1:
+            map_city = st.selectbox("📍 Map City", list(CITY_COORDS.keys()),
+                                    index=list(CITY_COORDS.keys()).index(city) if city in CITY_COORDS else 0,
+                                    key="map_city_sel")
+        with col_ctrl2:
+            all_types = sorted(set(r["type"] for r in FAMOUS_RESTAURANTS.get(map_city, DEFAULT_RESTAURANTS)))
+            selected_types = st.multiselect("Filter by Type", all_types, default=all_types, key="map_type_filter")
+        with col_ctrl3:
+            show_ai = st.toggle("📡 Include AI-detected restaurants (if available)", value=True, key="map_ai_toggle")
+
+        restaurants = FAMOUS_RESTAURANTS.get(map_city, [])
+
+        # Merge AI-detected restaurants from trend analysis if available
+        ai_restaurants = []
+        if show_ai and st.session_state.analysis and st.session_state.analysis.get("city","") == map_city:
+            famous_dishes = st.session_state.analysis.get("famous_dishes_trending", [])
+            center = CITY_COORDS.get(map_city, (20.5937, 78.9629))
+            import random
+            random.seed(42)
+            for d in famous_dishes:
+                rest_name = d.get("famous_at","")
+                # Check if not already in curated list
+                if rest_name and not any(r["name"] == rest_name for r in restaurants):
+                    # Place near city center with small jitter
+                    ai_restaurants.append({
+                        "name": rest_name,
+                        "lat": center[0] + random.uniform(-0.04, 0.04),
+                        "lon": center[1] + random.uniform(-0.04, 0.04),
+                        "specialty": d.get("dish_name",""),
+                        "type": "AI-Detected",
+                        "saves": d.get("saves_estimate",""),
+                        "ai": True,
+                    })
+
+        all_restaurants = restaurants + ai_restaurants
+
+        # Filter
+        filtered = [r for r in all_restaurants if r["type"] in selected_types or r.get("ai") and "AI-Detected" in selected_types]
+        # re-filter properly
+        type_filter_set = set(selected_types)
+        if show_ai:
+            type_filter_set.add("AI-Detected")
+        filtered = [r for r in all_restaurants if r["type"] in type_filter_set]
+
+        # ── Legend ─────────────────────────────────────────────
+        legend_html = '<div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px">'
+        present_types = sorted(set(r["type"] for r in filtered))
+        for t in present_types:
+            color = TYPE_COLORS.get(t, "#64748B")
+            legend_html += f'<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;background:{color}22;border:1px solid {color}44;font-size:11px;font-weight:600;color:{color}"><span style="width:8px;height:8px;border-radius:50%;background:{color};display:inline-block"></span>{t}</span>'
+        legend_html += '</div>'
+        st.markdown(legend_html, unsafe_allow_html=True)
+
+        # ── Build Folium Map ────────────────────────────────────
+        center = CITY_COORDS.get(map_city, (20.5937, 78.9629))
+        m = folium.Map(
+            location=center,
+            zoom_start=13,
+            tiles=None,
+        )
+
+        # Dark tile layer matching dashboard aesthetic
+        folium.TileLayer(
+            tiles="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            name="Dark",
+            max_zoom=19,
+        ).add_to(m)
+
+        for r in filtered:
+            color = TYPE_COLORS.get(r["type"], "#64748B")
+            is_ai = r.get("ai", False)
+
+            popup_html = f"""
+            <div style="font-family:DM Sans,sans-serif;min-width:200px;padding:4px">
+              <div style="font-size:15px;font-weight:700;color:#1C1410;margin-bottom:4px">{r['name']}</div>
+              <div style="display:inline-block;padding:2px 10px;border-radius:12px;background:{color}22;
+                          border:1px solid {color}66;font-size:10px;font-weight:700;color:{color};margin-bottom:8px">{r['type']}</div>
+              <div style="font-size:12px;color:#57534E;margin-top:4px">🍽 <strong>Specialty:</strong> {r.get('specialty','')}</div>
+              {'<div style="font-size:11px;color:#C4411A;margin-top:4px">📸 ' + r.get('saves','') + ' saves (AI trend)</div>' if is_ai else ''}
+              {'<div style="font-size:10px;color:#9CA3AF;margin-top:6px;font-style:italic">⚡ AI-detected trending spot</div>' if is_ai else ''}
+            </div>
+            """
+
+            icon_color = "white" if not is_ai else "orange"
+            folium.CircleMarker(
+                location=[r["lat"], r["lon"]],
+                radius=10 if not is_ai else 8,
+                color=color,
+                fill=True,
+                fill_color=color,
+                fill_opacity=0.85,
+                weight=2,
+                popup=folium.Popup(popup_html, max_width=260),
+                tooltip=folium.Tooltip(
+                    f"<b>{r['name']}</b><br><small>{r.get('specialty','')}</small>",
+                    style="font-family:DM Sans,sans-serif;font-size:12px;background:#0D0A08;color:#F5EFE6;border:1px solid #C4411A;padding:6px 10px;border-radius:8px;"
+                ),
+            ).add_to(m)
+
+        # City center marker
+        folium.Marker(
+            location=center,
+            tooltip=f"📍 {map_city} City Centre",
+            icon=folium.DivIcon(
+                html=f'<div style="font-size:20px;text-align:center;margin-top:-10px">📍</div>',
+                icon_size=(30, 30), icon_anchor=(15, 15),
+            )
+        ).add_to(m)
+
+        # ── Render Map ─────────────────────────────────────────
+        st_folium(m, width="100%", height=520, returned_objects=[])
+
+        # ── Restaurant List Below Map ───────────────────────────
+        st.markdown("""<div class="sec-head" style="margin-top:24px"><div class="sec-head-text">📋 Restaurant Directory</div><div class="sec-head-line"></div></div>""", unsafe_allow_html=True)
+
+        if filtered:
+            cols_per_row = 3
+            for i in range(0, len(filtered), cols_per_row):
+                cols = st.columns(cols_per_row)
+                for col, rest in zip(cols, filtered[i:i+cols_per_row]):
+                    color = TYPE_COLORS.get(rest["type"], "#64748B")
+                    ai_badge = ' <span style="font-size:9px;background:#FB923C22;color:#FB923C;padding:2px 6px;border-radius:10px;border:1px solid #FB923C44">⚡ AI</span>' if rest.get("ai") else ""
+                    with col:
+                        st.markdown(f"""
+                        <div style="background:#FFFCF8;border:1px solid rgba(196,65,26,0.15);border-left:3px solid {color};
+                                    border-radius:12px;padding:14px 16px;margin-bottom:12px;transition:all 0.2s">
+                          <div style="font-size:13px;font-weight:700;color:#1C1410;margin-bottom:4px">{rest['name']}{ai_badge}</div>
+                          <div style="display:inline-block;padding:2px 10px;border-radius:12px;background:{color}15;
+                                      font-size:9px;font-weight:700;color:{color};margin-bottom:6px;letter-spacing:0.1em;text-transform:uppercase">{rest['type']}</div>
+                          <div style="font-size:11px;color:#7A6F65">🍽 {rest.get('specialty','')}</div>
+                        </div>""", unsafe_allow_html=True)
+        else:
+            st.info("No restaurants match the selected filters.")
+
+        # ── Note ───────────────────────────────────────────────
+        st.markdown(f"""
+        <div class="status-info" style="margin-top:8px">
+            🗺️ &nbsp; Showing <strong>{len(filtered)} restaurants</strong> in <strong>{map_city}</strong>
+            &nbsp;·&nbsp; Curated: {len([r for r in filtered if not r.get('ai')])}
+            &nbsp;·&nbsp; AI-detected: {len([r for r in filtered if r.get('ai')])}
+            &nbsp;·&nbsp; Click any marker for details
+        </div>""", unsafe_allow_html=True)
