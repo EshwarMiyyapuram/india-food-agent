@@ -199,7 +199,81 @@ if scan_btn:
     with st.spinner(f"📡 Scraping Google, Zomato & Instagram for {city}..."):
         scraped = scrape_all_trends(city, verbose=False)
         st.session_state.scraped = scraped
-    st.success(f"✅ Scraped {sum(len(v) for k,v in scraped.items() if isinstance(v,list))} data points from {city}!")
+    total = sum(len(v) for k,v in scraped.items() if isinstance(v,list))
+    st.success(f"✅ Scraped {total} data points from {city}!")
+
+
+# ── SHOW SCRAPED DATA PREVIEW ─────────────
+if st.session_state.scraped and not st.session_state.analysis:
+    scraped = st.session_state.scraped
+    st.markdown("---")
+    st.markdown("### 📡 Raw Scraped Data Preview")
+
+    col_g, col_z = st.columns(2)
+
+    with col_g:
+        st.markdown("#### 🔍 Google Results")
+        google = scraped.get("google_results", [])
+        if google:
+            for r in google[:8]:
+                st.markdown(f"""
+                <div style="background:white;border:1px solid #EAE0D5;border-left:3px solid #FF6B00;
+                            border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+                    <div style="font-weight:700;font-size:13px;color:#1C1410">{r.get('title','')}</div>
+                    <div style="font-size:11px;color:#78716C;margin-top:4px">{r.get('snippet','')[:120]}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("No Google results scraped (network may have blocked)")
+
+    with col_z:
+        st.markdown("#### 🍽 Zomato Trending")
+        zomato = scraped.get("zomato_data", [])
+        if zomato:
+            for z in zomato[:10]:
+                icon = "🍴" if z.get("type") == "restaurant" else ("🏷" if z.get("type") == "collection" else "🌶")
+                st.markdown(f"""
+                <div style="background:white;border:1px solid #EAE0D5;border-left:3px solid #E23744;
+                            border-radius:8px;padding:8px 14px;margin-bottom:6px;
+                            font-size:13px;font-weight:600;color:#1C1410">
+                    {icon} {z.get('name','')} <span style="font-size:10px;color:#78716C;font-weight:400">[{z.get('type','')}]</span>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("No Zomato data scraped (Zomato may have blocked the request)")
+
+    col_a, col_h = st.columns(2)
+
+    with col_a:
+        st.markdown("#### 📰 Food Articles")
+        articles = scraped.get("articles", [])
+        if articles:
+            for a in articles[:6]:
+                st.markdown(f"""
+                <div style="background:white;border:1px solid #EAE0D5;border-left:3px solid #138808;
+                            border-radius:8px;padding:8px 14px;margin-bottom:6px;">
+                    <div style="font-size:12px;font-weight:700;color:#1C1410">{a.get('headline','')}</div>
+                    <div style="font-size:10px;color:#78716C;margin-top:2px">📰 {a.get('source','')}</div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("No articles scraped")
+
+    with col_h:
+        st.markdown("#### 📸 Instagram Hashtags")
+        hashtags = scraped.get("hashtags", [])
+        if hashtags:
+            html = ""
+            for h in hashtags:
+                t = h.get("type", "hot")
+                cls = f"htag-{t}"
+                html += f'<span class="htag {cls}">{h["hashtag"]} +{h["estimated_growth_pct"]}%</span> '
+            st.markdown(html, unsafe_allow_html=True)
+        else:
+            st.info("No hashtag data")
+
+    st.markdown("---")
+    st.info("👆 Scraped data ready! Now click **🤖 Generate Specials** to analyze with Claude AI.")
 
 
 # ── GENERATE SPECIALS ─────────────────────
@@ -293,6 +367,55 @@ with tab1:
             st.markdown('<br><div class="section-title">📉 Declining — Avoid</div>', unsafe_allow_html=True)
             for d in analysis.get("declining_trends", []):
                 st.markdown(f"🔻 **{d['name']}** — `{d['decline_pct']}` — *{d.get('reason','')}*")
+
+        # ── Raw Scraped Sources ──
+        scraped = st.session_state.scraped
+        if scraped:
+            with st.expander("📡 View Raw Scraped Data (Google · Zomato · Articles · Hashtags)", expanded=False):
+                sc1, sc2 = st.columns(2)
+                with sc1:
+                    st.markdown("**🔍 Google Results**")
+                    google = scraped.get("google_results", [])
+                    if google:
+                        for r in google[:10]:
+                            st.markdown(f"""
+                            <div style="background:#FAF7F2;border-left:3px solid #FF6B00;
+                                        border-radius:6px;padding:8px 12px;margin-bottom:6px;">
+                                <div style="font-weight:700;font-size:12px">{r.get('title','')}</div>
+                                <div style="font-size:11px;color:#78716C">{r.get('snippet','')[:100]}</div>
+                            </div>""", unsafe_allow_html=True)
+                    else:
+                        st.caption("No Google results (may have been blocked)")
+
+                    st.markdown("**📰 Articles Found**")
+                    articles = scraped.get("articles", [])
+                    if articles:
+                        for a in articles[:6]:
+                            st.markdown(f"📄 **{a.get('headline','')}** — `{a.get('source','')}`")
+                    else:
+                        st.caption("No articles found")
+
+                with sc2:
+                    st.markdown("**🍽 Zomato Trending**")
+                    zomato = scraped.get("zomato_data", [])
+                    if zomato:
+                        for z in zomato[:12]:
+                            icon = "🍴" if z.get("type") == "restaurant" else ("🏷" if z.get("type") == "collection" else "🌶")
+                            st.markdown(f"{icon} **{z.get('name','')}** `{z.get('type','')}`")
+                    else:
+                        st.caption("No Zomato data (may have been blocked)")
+
+                    st.markdown("**📸 Instagram Hashtags**")
+                    hashtags = scraped.get("hashtags", [])
+                    if hashtags:
+                        html = ""
+                        for h in hashtags:
+                            t = h.get("type", "hot")
+                            html += f'<span class="htag htag-{t}">{h["hashtag"]} +{h["estimated_growth_pct"]}%</span> '
+                        st.markdown(html, unsafe_allow_html=True)
+
+                total_pts = sum(len(v) for k,v in scraped.items() if isinstance(v,list))
+                st.caption(f"🗂 Total data points collected: **{total_pts}** · Scraped at: {scraped.get('scraped_at','—')}")
 
         # ── Famous Dishes ──
         st.markdown('<div class="section-title">🍜 Famous Dishes Trending Right Now</div>', unsafe_allow_html=True)
