@@ -170,7 +170,7 @@ with st.sidebar:
     scan_btn = st.button("📡 Scan Trends", use_container_width=True, type="secondary")
     gen_btn  = st.button("🤖 Generate Specials", use_container_width=True, type="primary")
     st.markdown("---")
-    st.caption("**Stack:** Python · BeautifulSoup · Claude AI · Streamlit")
+    st.caption("**Stack:** Python · BeautifulSoup · AI · Streamlit")
     st.caption("**Sources:** Google · Zomato · Times Food · Instagram")
 
 
@@ -187,7 +187,7 @@ st.markdown("""
   <div style="font-size:40px">🍛</div>
   <div>
     <div class="hero-title">भारत <span>FoodTrend</span> Agent</div>
-    <div class="hero-sub">Python · Web Scraping · Claude AI · Every Indian State</div>
+    <div class="hero-sub">Python · Web Scraping · AI · Every Indian State</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
@@ -199,9 +199,7 @@ if scan_btn:
     with st.spinner(f"📡 Scraping Google, Zomato & Instagram for {city}..."):
         scraped = scrape_all_trends(city, verbose=False)
         st.session_state.scraped = scraped
-        st.session_state.analysis = None   # reset analysis on new scan
-    total = sum(len(v) for k,v in scraped.items() if isinstance(v,list))
-    st.success(f"✅ Scraped {total} data points from {city}!")
+    st.success(f"✅ Scraped {sum(len(v) for k,v in scraped.items() if isinstance(v,list))} data points from {city}!")
 
 
 # ── GENERATE SPECIALS ─────────────────────
@@ -210,7 +208,7 @@ if gen_btn:
         st.warning("⚠️ Please scan trends first!")
     else:
         from llm.dish_generator import run_full_pipeline
-        with st.spinner("🤖 Claude AI is analyzing trends and crafting specials..."):
+        with st.spinner("🤖 AI is analyzing trends and crafting specials..."):
             output = run_full_pipeline(
                 scraped_data    = st.session_state.scraped,
                 restaurant_type = rtype,
@@ -235,76 +233,11 @@ tab1, tab2, tab3 = st.tabs(["📊 Trend Analysis", "🍽 Weekend Specials", "�
 #  TAB 1: TREND ANALYSIS
 # ════════════════════════════════
 with tab1:
-    analysis  = st.session_state.analysis
-    scraped_d = st.session_state.scraped
+    analysis = st.session_state.analysis
 
-    # ── Show raw scraped data immediately after Scan ──
-    if scraped_d and not analysis:
-        st.markdown(f"### 📡 Scraped Data for **{city}**")
-        st.caption("Raw data collected — click **Generate Specials** to run AI analysis on it.")
-
-        # Metrics row
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Google Results",   len(scraped_d.get("google_results", [])))
-        m2.metric("Zomato Items",     len(scraped_d.get("zomato_data", [])))
-        m3.metric("News Articles",    len(scraped_d.get("articles", [])))
-        m4.metric("Hashtags Loaded",  len(scraped_d.get("hashtags", [])))
-
-        st.markdown("---")
-
-        col_a, col_b = st.columns(2)
-
-        # Google Results
-        with col_a:
-            st.markdown('<div class="section-title">🔍 Google Search Results</div>', unsafe_allow_html=True)
-            google = scraped_d.get("google_results", [])
-            if google:
-                for r in google[:10]:
-                    title   = r.get("title", "")
-                    snippet = r.get("snippet", "")[:120]
-                    if title:
-                        st.markdown(f"**{title}**  \n<span style='font-size:12px;color:#6B7280'>{snippet}</span>", unsafe_allow_html=True)
-                        st.markdown("<hr style='margin:6px 0;border-color:#EAE0D5'>", unsafe_allow_html=True)
-            else:
-                st.caption("No Google results scraped (may be blocked — LLM will use its own knowledge).")
-
-            st.markdown('<div class="section-title">📰 Food News Articles</div>', unsafe_allow_html=True)
-            articles = scraped_d.get("articles", [])
-            if articles:
-                for a in articles[:8]:
-                    st.markdown(f"📰 **{a.get('headline','')}** — *{a.get('source','')}*")
-            else:
-                st.caption("No articles scraped.")
-
-        # Zomato + Hashtags
-        with col_b:
-            st.markdown('<div class="section-title">🍽 Zomato Trending</div>', unsafe_allow_html=True)
-            zomato = scraped_d.get("zomato_data", [])
-            if zomato:
-                rows = [{"Type": z.get("type","").capitalize(), "Name": z.get("name","")} for z in zomato[:15]]
-                import pandas as pd
-                st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
-            else:
-                st.caption("No Zomato data scraped.")
-
-            st.markdown('<div class="section-title">📸 Instagram Hashtags</div>', unsafe_allow_html=True)
-            tags = scraped_d.get("hashtags", [])
-            if tags:
-                html = ""
-                for h in tags:
-                    cls = f"htag-{h.get('type','hot')}"
-                    html += f'<span class="htag {cls}">{h.get("hashtag","")} +{h.get("estimated_growth_pct",0)}%</span>'
-                st.markdown(html, unsafe_allow_html=True)
-            else:
-                st.caption("No hashtag data.")
-
-        st.markdown("---")
-        st.info("✅ Scraping complete! Now click **🤖 Generate Specials** in the sidebar to run AI analysis.")
-
-    elif not analysis:
+    if not analysis:
         st.info("👈 Select a city and click **Scan Trends**, then **Generate Specials** to see the analysis.")
-
-    if analysis:
+    else:
         # Stats row
         stats = analysis.get("stats", {})
         c1, c2, c3, c4 = st.columns(4)
