@@ -374,7 +374,7 @@ st.markdown(f"""
 <div class="hero">
   <div style="position:relative;z-index:1">
     <div class="hero-eyebrow">● Live Intelligence Dashboard</div>
-    <div class="hero-title">SIRI <em>FoodTrend</em><br>Agent</div>
+    <div class="hero-title">SIRI <em>JAI SIRI </em><br>Agent</div>
     <div class="hero-tagline">Done by Siri & Co</div>
   </div>
   <div class="hero-stats" style="position:relative;z-index:1">
